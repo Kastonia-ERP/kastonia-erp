@@ -156,3 +156,8 @@ Der vollständige Beschaffungsprozess `Projekt → Bestellung → Lieferant → 
 ## Version v1.6 · Project Lifecycle
 
 Diese Version ergänzt zentrale Rollen (`ADMIN`, `MITARBEITER`), Projekt-Lifecycle-Felder, Timeline, Baustellenmeldungen, interne Benachrichtigungen, mobile Mitarbeiteransicht und Admin-Übersicht für Baustellenkommunikation. Demo-Accounts sind anonymisierte Demo-Logins ohne echte Passwörter.
+
+
+## v1.7 Operations Center
+
+Kastonia ERP enthält jetzt eine zentrale Seite `Heute`, eine erweiterte Aufgabenverwaltung, einen integrierten Projektkalender, Montageplanung, Team- und Fahrzeugverwaltung, Materialchecks, digitale Montage-Checklisten, interne Operations-Benachrichtigungen und neue Dashboard-Kennzahlen. Details stehen in `docs/OPERATIONS_CENTER.md`.

@@ -1,13 +1,13 @@
 {
   "name": "kastonia-erp-webapp",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/project-model.test.js"
+    "test": "node tests/build-operations-tests.js && node --test tests/project-model.test.js tests/operations-center.test.js"
   },
   "dependencies": {
     "next": "16.0.10",
