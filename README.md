@@ -175,3 +175,9 @@ KASTONIA ERP v1.9 ergänzt manuelle Ausgangs- und Eingangsrechnungen, Zahlungen,
 ## v1.9.1 · Field Operations, Documents & Finance Workflow
 
 Der aktuelle Stand ergänzt projektbezogene Arbeitszeiterfassung, Mitarbeiter-Mobile-Ansicht, Meldungszentrale, Material-/Werkzeug-/Fahrzeugmeldungen, mobile Uploads, Projektgalerie, zentrales Dokumentenmanagement, manuelle Eingangsbelege, manuelle Ausgangsrechnungsreferenzen, Zahlungen, offene Posten, Steuerkalender, vorläufige Umsatzsteuerübersicht und DATEV-Eingangsbelegexport als strukturierte Buchhaltungsübergabe. Lexoffice/DATEV bleiben führend; keine direkte API, keine automatischen Buchungen, keine Steueranmeldungen.
+
+## v1.9.3 · Personnel Availability & Annual Workforce Planning
+
+- Neue Admin-Seite „Personalplanung“ mit Jahres-, Monats-, Wochen- und Tageskonzept, Filtern, Legende, Kapazität, Konflikten und Qualifikationsübersicht.
+- Einsatzplanung berücksichtigt Anwesenheit, offene/genehmigte Freiwünsche, sonstige Abwesenheiten, Betriebsferien, Samstags-/Brückentagsstatus, Doppelbelegung, Fahrzeugkonflikte und Qualifikationswarnungen.
+- Mobile Mitarbeiteransicht enthält „Meine Verfügbarkeit“, Jahreskalender-Hinweise, Freiwunschstatus, kommende Einsätze, Samstage, Brückentage, Betriebsferien und interne Benachrichtigungen.

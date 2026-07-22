@@ -44,3 +44,7 @@ Diese Dokumentation beschreibt die Cloud-Grundlage für den sicheren Onlinebetri
 ## v1.9.1 · Field Operations, Documents & Finance Workflow
 
 Der aktuelle Stand ergänzt projektbezogene Arbeitszeiterfassung, Mitarbeiter-Mobile-Ansicht, Meldungszentrale, Material-/Werkzeug-/Fahrzeugmeldungen, mobile Uploads, Projektgalerie, zentrales Dokumentenmanagement, manuelle Eingangsbelege, manuelle Ausgangsrechnungsreferenzen, Zahlungen, offene Posten, Steuerkalender, vorläufige Umsatzsteuerübersicht und DATEV-Eingangsbelegexport als strukturierte Buchhaltungsübergabe. Lexoffice/DATEV bleiben führend; keine direkte API, keine automatischen Buchungen, keine Steueranmeldungen.
+
+## v1.9.3 · Personnel Availability & Annual Workforce Planning
+
+Personalverfügbarkeit, Jahreskalender, Freiwunsch-Workflow, Samstags-/Brückentagsplanung, Betriebsferien, Kapazitätsplanung, Qualifikationen, Konflikterkennung, interne Benachrichtigungen und technische Berechtigungsregeln wurden in der bestehenden Workforce-Planning-Architektur ergänzt.
