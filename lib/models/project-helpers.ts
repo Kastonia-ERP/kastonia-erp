@@ -22,7 +22,7 @@ export function getProjectRecordStep(status: ProjectStatus): ProjectRecordStep {
   const map: Record<ProjectStatus, ProjectRecordStep> = {
     'Neue Anfrage':'Neue Anfrage','Kontaktaufnahme':'Kontakt','Termin vereinbart':'Termin','Aufmaß':'Aufmaß',
     'Angebot in Vorbereitung':'Angebot','Angebot versendet':'Angebot','Nachfassen':'Angebot',
-    'Auftrag erhalten':'Auftrag','Auftragsbestätigung':'Auftrag','Bestellung Lieferant':'Bestellung','Material ausstehend':'Bestellung',
+    'Auftrag erhalten':'Auftrag','Auftragsbestätigung':'Auftrag','Bestellung Lieferant':'Bestellung','Material ausstehend':'Bestellung','Material teilweise vorhanden':'Bestellung','Material vollständig vorhanden':'Bestellung',
     'Montage geplant':'Montage','Montage läuft':'Montage','Nacharbeit':'Montage','Abnahme':'Montage',
     'Rechnung gestellt':'Rechnung','Bezahlt':'Bezahlt','Abgeschlossen':'Abgeschlossen','Storniert':'Abgeschlossen','Archiviert':'Abgeschlossen'
   };

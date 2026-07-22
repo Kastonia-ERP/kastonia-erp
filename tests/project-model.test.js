@@ -181,3 +181,80 @@ test('procurement updates project cost and progress', () => {
   const delivered = updateProjectProgressFromProcurement([updated], [{ ...order, status:'Geliefert' }], new Date('2026-07-23T00:00:00Z'))[0];
   assert.equal(delivered.status, 'Montage geplant');
 });
+const { hasPermission, canAccessProject, sanitizeProjectForUser, assertPermission } = require('../lib/models/permissions.ts');
+const { createSiteReport, addImageToReport, changeSiteReportStatus, preparePurchaseFromMaterialReport, markToolProvided, createStorageReference } = require('../lib/models/site-reports.ts');
+
+test('v1.6 admin permissions allow protected ERP areas', () => {
+  const state = migrateToV09({});
+  const admin = state.users.find(u => u.role === 'ADMIN');
+  assert.equal(hasPermission(admin, 'offers:read'), true);
+  assert.equal(hasPermission(admin, 'purchasing:manage'), true);
+  assert.equal(hasPermission(admin, 'users:manage'), true);
+});
+
+test('v1.6 employee permissions block offers invoices prices and unassigned projects', () => {
+  const state = migrateToV09({});
+  const employee = state.users.find(u => u.role === 'MITARBEITER');
+  assert.equal(hasPermission(employee, 'offers:read'), false);
+  assert.equal(hasPermission(employee, 'finance:read'), false);
+  assert.throws(() => assertPermission(employee, 'users:manage'));
+  assert.equal(canAccessProject(employee, state.projects.find(p => p.id === 'P-001')), true);
+  assert.equal(canAccessProject(employee, state.projects.find(p => p.id === 'P-002')), false);
+  const sanitized = sanitizeProjectForUser(employee, state.projects.find(p => p.id === 'P-003'));
+  assert.equal(sanitized.offers.length, 0);
+  assert.equal(sanitized.invoices.length, 0);
+  assert.equal(sanitized.financials.expectedCostNet, 0);
+  assert.equal(sanitized.value, 0);
+});
+
+test('v1.6 creates site report with timeline and internal notifications', () => {
+  const state = migrateToV09({});
+  const employee = state.users.find(u => u.role === 'MITARBEITER');
+  const project = state.projects.find(p => p.id === 'P-003');
+  const result = createSiteReport({ projectId: project.id, constructionSite: 'Baustelle', createdBy: employee.id, category: 'Mangel', title: 'Kratzer am Profil', description: 'Dokumentiert vor Abnahme', priority: 'Dringend' }, project, employee, '2026-07-22T10:00:00.000Z');
+  assert.equal(result.report.status, 'Neu');
+  assert.equal(result.timeline[0].eventType, 'Baustellenmeldung erstellt');
+  assert.equal(result.notifications.length, 1);
+});
+
+test('v1.6 image references are added without base64 project storage', () => {
+  const state = migrateToV09({});
+  const employee = state.users.find(u => u.role === 'MITARBEITER');
+  const project = state.projects.find(p => p.id === 'P-003');
+  const { report } = createSiteReport({ projectId: project.id, constructionSite: 'Baustelle', createdBy: employee.id, category: 'Abnahmebilder', title: 'Abnahme Dach', description: 'Gesamtansicht', priority: 'Normal' }, project, employee);
+  const ref = createStorageReference('abnahme.jpg', 'image/jpeg', '/uploads/abnahme.jpg');
+  const image = { id: 'IMG-X', fileReference: ref.reference, fileName: ref.fileName, fileType: ref.fileType, uploadedAt: '2026-07-22T11:00:00.000Z', uploadedBy: employee.id, description: 'Gesamtansicht', category: 'Abnahme' };
+  const updated = addImageToReport(report, image, project, employee, '2026-07-22T11:00:00.000Z');
+  assert.equal(updated.report.images[0].fileReference, '/uploads/abnahme.jpg');
+  assert.equal(updated.timeline[0].eventType, 'Bild hinzugefügt');
+});
+
+test('v1.6 material and tool reports use existing workflows', () => {
+  const state = migrateToV09({});
+  const admin = state.users.find(u => u.role === 'ADMIN');
+  const material = state.siteReports.find(r => r.category === 'Material nachbestellen');
+  const ordered = preparePurchaseFromMaterialReport(material, admin, 'BE20260001');
+  assert.equal(ordered.status, 'Bestellt');
+  assert.equal(ordered.materialDetails.linkedPurchaseOrderId, 'BE20260001');
+  const tool = { ...material, id: 'BM-TOOL', category: 'Werkzeug benötigt', materialDetails: undefined, toolDetails: { toolName: 'Bohrhammer', requiredQuantity: 1, procurementType: 'Ausleihe', constructionSite: 'Baustelle' } };
+  assert.equal(markToolProvided(tool, admin, '2026-07-22T12:00:00.000Z').status, 'Erledigt');
+});
+
+test('v1.6 status changes close reports and notify creator', () => {
+  const state = migrateToV09({});
+  const admin = state.users.find(u => u.role === 'ADMIN');
+  const report = state.siteReports[0];
+  const result = changeSiteReportStatus(report, 'Erledigt', admin, '2026-07-22T13:00:00.000Z', 'Bestellung ausgelöst.');
+  assert.equal(result.report.closedAt, '2026-07-22T13:00:00.000Z');
+  assert.equal(result.report.internalResponse, 'Bestellung ausgelöst.');
+  assert.equal(result.timeline[0].eventType, 'Meldung abgeschlossen');
+  assert.equal(result.notifications[0].type, 'STATUS_CHANGE');
+});
+
+test('v1.6 migration keeps users reports notifications and timeline', () => {
+  const state = migrateToV09({ projects: [{ id: 'P-OLD16', customer: 'C', title: 'T' }] });
+  assert.ok(state.users.length >= 3);
+  assert.ok(state.siteReports.length >= 1);
+  assert.ok(state.notifications.length >= 1);
+  assert.equal(Array.isArray(state.projects[0].timeline), true);
+});

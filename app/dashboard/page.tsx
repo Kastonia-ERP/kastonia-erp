@@ -46,7 +46,7 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.5</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.6 · Project Lifecycle</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
@@ -55,6 +55,10 @@ export default function Dashboard(){
    <article className="kpiCard warning"><small>Offene Steuern</small><strong>{eur(openTaxes)}</strong><span>nächste Fälligkeiten beachten</span></article>
    <article className="kpiCard"><small>Umsatz netto</small><strong>{eur(inc)}</strong><span>Plan {eur(state.settings.revenuePlan)}</span></article>
    <article className="kpiCard"><small>Gewinn vor Steuern</small><strong>{eur(profit)}</strong><span>Marge {inc?((profit/inc)*100).toFixed(1):'0,0'} %</span></article>
+   <article className="kpiCard warning"><small>Offene Baustellenmeldungen</small><strong>{state.siteReports.filter(r=>!['Erledigt','Abgelehnt'].includes(r.status)).length}</strong><span>{state.siteReports.filter(r=>r.priority==='Baustopp').length} Baustopp · {state.siteReports.filter(r=>r.priority==='Dringend').length} dringend</span></article>
+   <article className="kpiCard"><small>Offene Materialnachbestellungen</small><strong>{state.siteReports.filter(r=>r.category==='Material nachbestellen'&&r.status!=='Erledigt').length}</strong><span>Werkzeug {state.siteReports.filter(r=>r.category==='Werkzeug benötigt'&&r.status!=='Erledigt').length}</span></article>
+   <article className="kpiCard warning"><small>Offene Mängel/Nacharbeiten</small><strong>{state.siteReports.filter(r=>['Mangel','Nacharbeit'].includes(r.category)&&r.status!=='Erledigt').length}</strong><span>Abnahme offen {state.projects.filter(p=>p.status==='Abnahme').length}</span></article>
+   <article className="kpiCard"><small>Projekte in Montage</small><strong>{state.projects.filter(p=>p.status==='Montage läuft').length}</strong><span>Material fehlt {state.projects.filter(p=>['Material ausstehend','Material teilweise vorhanden'].includes(p.status)).length}</span></article>
    <article className="kpiCard"><small>Aktive Projekte</small><strong>{activeProjects.length}</strong><span>{state.projects.length} Projekte insgesamt</span></article>
    <article className="kpiCard"><small>Offene Aufgaben</small><strong>{openTasks.length}</strong><span>{openTasks.filter((x:Task)=>x.priority==='Hoch').length} mit hoher Priorität</span></article>
    <article className="kpiCard"><small>Angebote offen</small><strong>{state.offers.filter((o)=>!['Gewonnen','Verloren','Storniert'].includes(o.status)).length}</strong><span>Heute erstellt {state.offers.filter((o)=>o.date===new Date().toISOString().slice(0,10)).length}</span></article>

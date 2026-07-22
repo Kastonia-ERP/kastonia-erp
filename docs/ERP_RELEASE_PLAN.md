@@ -119,3 +119,7 @@ Monteurprozesse laufen mobil, Daten werden synchronisiert, und DATEV-Prozesse si
 ## v1.5 – Teil 1 Einkauf, Lieferanten und Lieferungen
 
 Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingang mit Teil-/Restmengen, automatische Bestellstatus-Aktualisierung und Dashboard-Kennzahlen für Einkauf und Lieferungen. Details: `docs/PURCHASING_AND_SUPPLIERS.md`.
+
+## v1.6 · Project Lifecycle
+
+Release-Schwerpunkt: praxistauglicher Projektablauf von Anfrage bis Abschluss, Rollen ADMIN/MITARBEITER, mobile Baustellenkommunikation, Material-/Werkzeugmeldungen und vorbereitete externe Benachrichtigungsschnittstelle.
