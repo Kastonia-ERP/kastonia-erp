@@ -13,3 +13,35 @@ export function calculateProjectMargin(financials: Pick<ProjectFinancials, 'expe
 export function calculateOpenCustomerPayment(financials: Pick<ProjectFinancials, 'expectedRevenueGross' | 'customerPaid'>): number { return Math.max(0, roundMoney((financials.expectedRevenueGross || 0) - (financials.customerPaid || 0))); }
 export function calculateOpenSupplierPayment(financials: Pick<ProjectFinancials, 'expectedCostGross' | 'supplierPaid'>): number { return Math.max(0, roundMoney((financials.expectedCostGross || 0) - (financials.supplierPaid || 0))); }
 export function roundMoney(value: number): number { return Math.round((value + Number.EPSILON) * 100) / 100; }
+
+
+export const PROJECT_RECORD_STEPS = ['Neue Anfrage','Kontakt','Termin','Aufmaß','Angebot','Auftrag','Bestellung','Montage','Rechnung','Bezahlt','Abgeschlossen'] as const;
+export type ProjectRecordStep = typeof PROJECT_RECORD_STEPS[number];
+
+export function getProjectRecordStep(status: ProjectStatus): ProjectRecordStep {
+  const map: Record<ProjectStatus, ProjectRecordStep> = {
+    'Neue Anfrage':'Neue Anfrage','Kontaktaufnahme':'Kontakt','Termin vereinbart':'Termin','Aufmaß':'Aufmaß',
+    'Angebot in Vorbereitung':'Angebot','Angebot versendet':'Angebot','Nachfassen':'Angebot',
+    'Auftrag erhalten':'Auftrag','Auftragsbestätigung':'Auftrag','Bestellung Lieferant':'Bestellung','Material ausstehend':'Bestellung',
+    'Montage geplant':'Montage','Montage läuft':'Montage','Nacharbeit':'Montage','Abnahme':'Montage',
+    'Rechnung gestellt':'Rechnung','Bezahlt':'Bezahlt','Abgeschlossen':'Abgeschlossen','Storniert':'Abgeschlossen','Archiviert':'Abgeschlossen'
+  };
+  return map[status];
+}
+
+export function getProjectRecordStepIndex(status: ProjectStatus): number {
+  return PROJECT_RECORD_STEPS.indexOf(getProjectRecordStep(status));
+}
+
+export function calculateProjectMarginPercent(financials: Pick<ProjectFinancials, 'expectedRevenueNet' | 'expectedCostNet'>): number {
+  const revenue = financials.expectedRevenueNet || 0;
+  if (!revenue) return 0;
+  return roundMoney((calculateProjectMargin(financials) / revenue) * 100);
+}
+
+export function findProjectById(projects: Project[], id: string): Project | undefined { return projects.find(project => project.id === id); }
+
+export type ProjectBaseUpdate = Pick<Project, 'status' | 'phase' | 'priority' | 'responsible' | 'montage'>;
+export function updateProjectBaseData(project: Project, update: ProjectBaseUpdate, at = nowIso()): Project {
+  return { ...project, ...update, updatedAt: at, archived: update.status === 'Archiviert' ? true : project.archived };
+}
