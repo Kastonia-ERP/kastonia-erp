@@ -123,3 +123,41 @@ test('documents offer status changes', () => {
   assert.equal(updated.statusHistory.at(-1).from, 'Entwurf');
   assert.equal(updated.statusHistory.at(-1).to, 'Versendet');
 });
+
+const { calculatePurchaseOrder, createPurchaseOrderNumber, normalizeSupplier, remainingQuantityForItem, updateOrderStatusFromDeliveries } = require('../lib/models/purchasing.ts');
+
+test('purchasing number range is yearly sequential', () => {
+  assert.equal(createPurchaseOrderNumber([{ id: 'BE20260001', orderNumber: 'BE20260001' }], new Date('2026-07-22T00:00:00Z')), 'BE20260002');
+});
+
+test('purchase order calculation includes discount and vat', () => {
+  const order = calculatePurchaseOrder({ id:'BE20260001', orderNumber:'BE20260001', supplierId:'L1', supplierName:'Demo', orderDate:'2026-07-22', status:'Entwurf', paymentStatus:'Offen', deliveryAddress:'', note:'', documentReferences:[], createdAt:'', updatedAt:'', netTotal:0, vatTotal:0, grossTotal:0, items:[{ id:'I1', name:'Ware', description:'', quantity:2, unit:'Stk.', unitPriceNet:100, discount:10, vatRate:19, netTotal:0, vatTotal:0, grossTotal:0 }] });
+  assert.equal(order.netTotal, 180);
+  assert.equal(order.vatTotal, 34.2);
+  assert.equal(order.grossTotal, 214.2);
+});
+
+test('supplier migration normalizes legacy supplier data', () => {
+  const supplier = normalizeSupplier({ id:'L-OLD', name:'Altlieferant', category:'Markisen', contact:'Kontakt' });
+  assert.equal(supplier.companyName, 'Altlieferant');
+  assert.equal(supplier.categories[0], 'Markisen');
+  assert.equal(supplier.active, true);
+});
+
+test('purchase order can be linked to a project', () => {
+  const migrated = migrateToV09({ projects:[{ id:'P-LINK', customer:'C', title:'T', status:'Lead' }], purchaseOrders:[{ id:'BE20260003', orderNumber:'BE20260003', supplierId:'L1', supplierName:'Demo', projectId:'P-LINK', orderDate:'2026-07-22', status:'Bestellt', paymentStatus:'Offen', deliveryAddress:'', note:'', documentReferences:[], createdAt:'', updatedAt:'', netTotal:0, vatTotal:0, grossTotal:0, items:[] }] });
+  assert.equal(migrated.purchaseOrders[0].projectId, migrated.projects[0].id);
+});
+
+test('partial deliveries calculate remaining quantities and status', () => {
+  const order = calculatePurchaseOrder({ id:'BE20260004', orderNumber:'BE20260004', supplierId:'L1', supplierName:'Demo', orderDate:'2026-07-22', status:'Bestellt', paymentStatus:'Offen', deliveryAddress:'', note:'', documentReferences:[], createdAt:'', updatedAt:'', netTotal:0, vatTotal:0, grossTotal:0, items:[{ id:'I1', name:'Ware', description:'', quantity:5, unit:'Stk.', unitPriceNet:10, discount:0, vatRate:19, netTotal:0, vatTotal:0, grossTotal:0 }] });
+  const deliveries = [{ id:'WE1', purchaseOrderId:order.id, deliveryNoteNumber:'LS1', deliveryDate:'2026-07-23', status:'Teilweise geliefert', notes:'', documentReferences:[], items:[{ id:'D1', orderItemId:'I1', name:'Ware', deliveredQuantity:2, damagedQuantity:0, missingQuantity:3, unit:'Stk.' }] }];
+  assert.equal(remainingQuantityForItem(order.items[0], deliveries), 3);
+  assert.equal(updateOrderStatusFromDeliveries(order, deliveries).status, 'Teilweise geliefert');
+});
+
+test('complete delivery automatically marks order delivered', () => {
+  const order = calculatePurchaseOrder({ id:'BE20260005', orderNumber:'BE20260005', supplierId:'L1', supplierName:'Demo', orderDate:'2026-07-22', status:'Bestellt', paymentStatus:'Offen', deliveryAddress:'', note:'', documentReferences:[], createdAt:'', updatedAt:'', netTotal:0, vatTotal:0, grossTotal:0, items:[{ id:'I1', name:'Ware', description:'', quantity:1, unit:'Stk.', unitPriceNet:10, discount:0, vatRate:19, netTotal:0, vatTotal:0, grossTotal:0 }] });
+  const updated = updateOrderStatusFromDeliveries(order, [{ id:'WE1', purchaseOrderId:order.id, deliveryNoteNumber:'LS1', deliveryDate:'2026-07-23', status:'Vollständig geliefert', notes:'', documentReferences:[], items:[{ id:'D1', orderItemId:'I1', name:'Ware', deliveredQuantity:1, damagedQuantity:0, missingQuantity:0, unit:'Stk.' }] }]);
+  assert.equal(updated.status, 'Geliefert');
+});

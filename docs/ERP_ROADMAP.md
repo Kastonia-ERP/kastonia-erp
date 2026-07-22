@@ -49,3 +49,8 @@ Lead → Kunde → Projekt → Angebot → Auftrag → Einkauf → Lieferanten �
 3. v1.5-Kernmodule Einkauf, Lieferanten, Dokumente, Montage, Rechnungen, Zahlungen, Steuern, DATEV, Dashboard und Reporting planen und nacheinander umsetzen.
 4. Automatisierungen, KI und Kundenportal erst nach stabilen Daten- und Prozessgrundlagen starten.
 5. Lager, mobile Optimierungen und Monteur-App auf Basis der operativen Module ausbauen.
+
+
+## v1.5 – Teil 1 Einkauf, Lieferanten und Lieferungen
+
+Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingang mit Teil-/Restmengen, automatische Bestellstatus-Aktualisierung und Dashboard-Kennzahlen für Einkauf und Lieferungen. Details: `docs/PURCHASING_AND_SUPPLIERS.md`.

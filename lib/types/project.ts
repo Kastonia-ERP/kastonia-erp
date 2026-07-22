@@ -35,6 +35,14 @@ export interface CommunicationEntry { id: string; date: ISODateString; channel: 
 export interface Task { id: string; title: string; due: ISODateString; priority: ProjectPriority; done: boolean; projectId?: string; assignedTo?: string; }
 export interface Appointment { id: string; title: string; date: ISODateString; type: string; projectId?: string; }
 export interface ProjectFinancials { currency: CurrencyCode; expectedRevenueNet: number; expectedRevenueGross: number; expectedCostNet: number; expectedCostGross: number; customerPaid: number; supplierPaid: number; }
+export interface StateLikeSupplier { id:string; companyName:string; name?:string; contact?:string; category?:string; contactPerson:string; address:string; country:string; email:string; phone:string; website:string; supplierCustomerNumber:string; paymentTerms:string; usualDeliveryTime:string; categories:string[]; notes:string; active:boolean; createdAt:ISODateString; updatedAt:ISODateString; }
+export type PurchaseOrderStatus='Entwurf'|'Angefragt'|'Bestellt'|'Teilweise geliefert'|'Geliefert'|'Storniert';
+export type PurchasePaymentStatus='Offen'|'Teilweise bezahlt'|'Bezahlt';
+export interface PurchaseOrderItem { id:string; name:string; description:string; quantity:number; unit:string; unitPriceNet:number; discount:number; vatRate:number; netTotal:number; vatTotal:number; grossTotal:number; }
+export interface PurchaseOrder { id:string; orderNumber:string; supplierId:string; supplierName:string; projectId?:string; projectNumber?:string; orderDate:ISODateString; expectedDeliveryDate?:ISODateString; actualDeliveryDate?:ISODateString; status:PurchaseOrderStatus; items:PurchaseOrderItem[]; netTotal:number; vatTotal:number; grossTotal:number; deliveryAddress:string; note:string; paymentStatus:PurchasePaymentStatus; documentReferences:string[]; createdAt:ISODateString; updatedAt:ISODateString; }
+export type DeliveryStatus='Erwartet'|'Teilweise geliefert'|'Vollständig geliefert'|'Beschädigt'|'Reklamation offen';
+export interface DeliveryItem { id:string; orderItemId:string; name:string; deliveredQuantity:number; damagedQuantity:number; missingQuantity:number; unit:string; }
+export interface Delivery { id:string; purchaseOrderId:string; projectId?:string; deliveryNoteNumber:string; deliveryDate:ISODateString; items:DeliveryItem[]; status:DeliveryStatus; notes:string; documentReferences:string[]; }
 
 export interface Project {
   id: string; projectNumber: string; title: string; customer: string; customerDetails?: Customer;
