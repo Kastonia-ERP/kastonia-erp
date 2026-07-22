@@ -79,3 +79,47 @@ test('maps project status to visible record step', () => {
   assert.equal(getProjectRecordStep('Material ausstehend'), 'Bestellung');
   assert.equal(getProjectRecordStep('Rechnung gestellt'), 'Rechnung');
 });
+const { calculateOffer, calculateOfferItem, changeOfferStatus: changeOfferEngineStatus, createEmptyOffer, createOfferNumber, duplicateOffer: duplicateOfferEngine, integrateOfferIntoProjects, summarizeProjectOffers } = require('../lib/models/offer-engine.ts');
+
+test('creates unique offer numbers by year', () => {
+  assert.equal(createOfferNumber([{ id: 'AG20260001', offerNumber: 'AG20260001' }], new Date('2026-07-22T00:00:00Z')), 'AG20260002');
+});
+
+test('versions offers without deleting older versions', () => {
+  const base = createEmptyOffer(migrateToV09({ projects: [{ id: 'P-OFFER', customer: 'C', title: 'T', projectNumber: 'P20260001' }] }).projects[0], [], new Date('2026-07-22T00:00:00Z'));
+  const copy = duplicateOfferEngine(base, [base], new Date('2026-07-23T00:00:00Z'));
+  assert.equal(copy.offerNumber, base.offerNumber);
+  assert.equal(copy.version, 2);
+  assert.notEqual(copy.id, base.id);
+});
+
+test('calculates offer totals, discounts and margin', () => {
+  const item = calculateOfferItem({ id: '1', type: 'Terrassendach', name: 'Dach', description: '', quantity: 2, unit: 'Stk.', purchasePrice: 300, salesPrice: 500, discount: 10, vatRate: 19, totalNet: 0, totalGross: 0, marginAmount: 0, marginPercent: 0 });
+  assert.equal(item.totalNet, 900);
+  assert.equal(item.totalGross, 1071);
+  assert.equal(item.marginAmount, 300);
+  assert.equal(item.marginPercent, 33.33);
+  const calc = calculateOffer([item]);
+  assert.equal(calc.discount, 100);
+  assert.equal(calc.net, 900);
+  assert.equal(calc.vat, 171);
+  assert.equal(calc.marginAmount, 300);
+});
+
+test('supports offer CRUD-style project integration', () => {
+  const project = migrateToV09({ projects: [{ id: 'P-INT', customer: 'C', title: 'T', projectNumber: 'P20260002' }] }).projects[0];
+  const offer = createEmptyOffer(project, [], new Date('2026-07-22T00:00:00Z'));
+  const projects = integrateOfferIntoProjects([project], { ...offer, net: 1000, gross: 1190 });
+  assert.equal(projects[0].offers.length, 1);
+  assert.equal(projects[0].financials.expectedRevenueNet, 1000);
+  assert.equal(summarizeProjectOffers(projects[0], [{ ...offer, net: 1000, gross: 1190 }]).totalValue, 1190);
+});
+
+test('documents offer status changes', () => {
+  const project = migrateToV09({ projects: [{ id: 'P-ST', customer: 'C', title: 'T' }] }).projects[0];
+  const offer = createEmptyOffer(project, [], new Date('2026-07-22T00:00:00Z'));
+  const updated = changeOfferEngineStatus(offer, 'Versendet', 'Tester', new Date('2026-07-22T10:00:00Z'));
+  assert.equal(updated.status, 'Versendet');
+  assert.equal(updated.statusHistory.at(-1).from, 'Entwurf');
+  assert.equal(updated.statusHistory.at(-1).to, 'Versendet');
+});

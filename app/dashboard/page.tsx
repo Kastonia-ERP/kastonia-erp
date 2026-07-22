@@ -36,7 +36,7 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP 0.9</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP 1.1</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
@@ -47,6 +47,9 @@ export default function Dashboard(){
    <article className="kpiCard"><small>Gewinn vor Steuern</small><strong>{eur(profit)}</strong><span>Marge {inc?((profit/inc)*100).toFixed(1):'0,0'} %</span></article>
    <article className="kpiCard"><small>Aktive Projekte</small><strong>{activeProjects.length}</strong><span>{state.projects.length} Projekte insgesamt</span></article>
    <article className="kpiCard"><small>Offene Aufgaben</small><strong>{openTasks.length}</strong><span>{openTasks.filter((x:any)=>x.priority==='Hoch').length} mit hoher Priorität</span></article>
+   <article className="kpiCard"><small>Angebote offen</small><strong>{state.offers.filter((o)=>!['Gewonnen','Verloren','Storniert'].includes(o.status)).length}</strong><span>Heute erstellt {state.offers.filter((o)=>o.date===new Date().toISOString().slice(0,10)).length}</span></article>
+   <article className="kpiCard"><small>Nachfassen</small><strong>{state.offers.filter((o)=>o.status==='Nachfassen').length}</strong><span>Gewonnen {state.offers.filter((o)=>o.status==='Gewonnen').length} · Verloren {state.offers.filter((o)=>o.status==='Verloren').length}</span></article>
+   <article className="kpiCard"><small>Angebotsvolumen</small><strong>{eur(state.offers.reduce((a,o)=>a+o.gross,0))}</strong><span>Abschlussquote {state.offers.length?Math.round(state.offers.filter((o)=>o.status==='Gewonnen').length/state.offers.length*100):0} %</span></article>
   </section>
 
   <section className="twoCol cockpitCharts">
