@@ -148,3 +148,7 @@ Das Projekt ist weiterhin mit Vercel kompatibel, kann aber genauso auf einem eig
 ## v1.5 – Teil 1 Einkauf, Lieferanten und Lieferungen
 
 Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingang mit Teil-/Restmengen, automatische Bestellstatus-Aktualisierung und Dashboard-Kennzahlen für Einkauf und Lieferungen. Details: `docs/PURCHASING.md` und `docs/PURCHASING_AND_SUPPLIERS.md`.
+
+## Procurement Workflow
+
+Der vollständige Beschaffungsprozess `Projekt → Bestellung → Lieferant → Lieferung → Wareneingang → Projektfortschritt` ist in der bestehenden Projektakte und im zentralen Store integriert. Enthalten sind erweiterte Lieferantenstammdaten, Bestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingänge mit Teil-/Restmengen und Reklamationen, automatische Status- und Projektfortschrittsupdates sowie neue Dashboard-KPIs. Details stehen in [Procurement Workflow](docs/PROCUREMENT_WORKFLOW.md).
