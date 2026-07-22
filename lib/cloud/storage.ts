@@ -1,0 +1,7 @@
+import {getCloudConfigStatus} from './config';
+export const FILE_CATEGORIES=['Baustellenbilder','Zustandsbilder','Montagefortschritt','Materialbilder','Schadensbilder','Mängelbilder','Abnahmebilder','Nacharbeitsbilder','Werkzeugbilder','Fahrzeugbilder','PDFs','Lieferscheine','Montageprotokolle'] as const;
+export type FileCategory=typeof FILE_CATEGORIES[number];
+export type FileMetadata={id:string;projectId?:string;siteId?:string;messageId?:string;userId:string;category:FileCategory;fileName:string;fileType:string;fileSize:number;storagePath:string;description?:string;capturedOrUploadedAt:string;createdAt:string};
+const allowed=['image/jpeg','image/png','image/webp','application/pdf'];export const MAX_FILE_SIZE=15*1024*1024;
+export function validateUploadFile(file:Pick<File,'type'|'size'|'name'>){const errors:string[]=[];if(!allowed.includes(file.type))errors.push('Dateiformat nicht erlaubt: '+file.type);if(file.size>MAX_FILE_SIZE)errors.push('Datei ist größer als 15 MB: '+file.name);return {valid:errors.length===0,errors};}
+export function createStoragePath(input:{userId:string;projectId?:string;category:FileCategory;fileName:string;now?:Date}){const now=input.now||new Date();const safe=input.fileName.toLowerCase().replace(/[^a-z0-9.-_]+/g,'-').slice(-90);const project=input.projectId||'unassigned';return [getCloudConfigStatus().bucket,project,input.category,input.userId,now.toISOString().replace(/[:.]/g,'-')+'-'+crypto.randomUUID()+'-'+safe].join('/');}

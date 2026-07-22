@@ -1,0 +1,4 @@
+export type CloudConfigStatus={configured:boolean;missing:string[];appUrl:string;bucket:string;environment:string};
+const requiredClient=['NEXT_PUBLIC_SUPABASE_URL','NEXT_PUBLIC_SUPABASE_ANON_KEY','NEXT_PUBLIC_APP_URL','NEXT_PUBLIC_STORAGE_BUCKET','NEXT_PUBLIC_APP_ENV'] as const;
+export function getCloudConfigStatus(env:Record<string,string|undefined>=process.env):CloudConfigStatus{const missing=requiredClient.filter(k=>!env[k]);return {configured:missing.length===0,missing,appUrl:env.NEXT_PUBLIC_APP_URL||'http://localhost:3000',bucket:env.NEXT_PUBLIC_STORAGE_BUCKET||env.SUPABASE_STORAGE_BUCKET||'kastonia-files',environment:env.NEXT_PUBLIC_APP_ENV||'development'};}
+export function assertCloudConfig(env:Record<string,string|undefined>=process.env){const status=getCloudConfigStatus(env);if(!status.configured)throw new Error('Cloud-Konfiguration unvollständig: '+status.missing.join(', '));return status;}
