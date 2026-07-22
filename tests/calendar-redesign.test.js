@@ -78,3 +78,21 @@ test('status icons are svg based and internal names are not rendered as text', (
   assert.doesNotMatch(admin, /<i>\{s\[0\]\}<\/i>/);
 });
 
+
+test('project-centered workforce planning exposes monthly project cards and day details', () => {
+  const planning = fs.readFileSync('app/einsatzplanung/page.tsx','utf8');
+  assert.match(planning, /Projektzentrierte Einsatzplanung/);
+  assert.match(planning, /projectMonthList/);
+  assert.match(planning, /freigegebene Samstage, Brückentage, Sonderarbeitstage und Betriebsferien/);
+  ['Kunde','Adresse','Beginn','Ende','Fahrzeug','Werkzeuge','Material','Geplante Stunden'].forEach(label => assert.match(planning, new RegExp(label)));
+});
+
+test('project-centered assignment supports drag drop, multi select, capacity bars and qualification badges', () => {
+  const planning = fs.readFileSync('app/einsatzplanung/page.tsx','utf8');
+  assert.match(planning, /assignmentColumns/);
+  assert.match(planning, /draggable/);
+  assert.match(planning, /Mehrfachauswahl/);
+  assert.match(planning, /capacityBar/);
+  assert.match(planning, /qualBadges/);
+  assert.match(planning, /Fahrzeugführer/);
+});
