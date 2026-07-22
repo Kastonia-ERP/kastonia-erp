@@ -54,3 +54,27 @@ test('responsive empty states conflict and keyboard styling are present', () => 
   assert.match(admin, /dangerAlert/);
   assert.match(css, /focus-visible/);
 });
+
+test('tablet planning keeps 3 to 5 relevant workdays visible and sticky names', () => {
+  assert.match(admin, /relevantDays=\[[^\]]*2026-07-24[^\]]*\]/);
+  assert.match(admin, /workdayScroller/);
+  assert.match(admin, /matrixName sticky/);
+  assert.match(css, /@media\(min-width:761px\) and \(max-width:1180px\)/);
+  assert.match(css, /repeat\(5,138px\)/);
+});
+
+test('project cards expose assignment controls and occupancy', () => {
+  assert.match(admin, /Belegung: \{assigned\.length\} \/ \{requiredEmployees\}/);
+  assert.match(admin, /Mitarbeiter hinzufügen/);
+  assert.match(admin, /Entfernen/);
+  assert.match(admin, /Teamleiter/);
+  assert.match(admin, /Drag-and-drop/);
+});
+
+test('status icons are svg based and internal names are not rendered as text', () => {
+  assert.match(admin, /function Icon/);
+  assert.match(admin, /aria-hidden="true"/);
+  assert.doesNotMatch(admin, /<i>\{meta\.icon\}<\/i>/);
+  assert.doesNotMatch(admin, /<i>\{s\[0\]\}<\/i>/);
+});
+
