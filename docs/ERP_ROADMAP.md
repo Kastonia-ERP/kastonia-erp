@@ -54,3 +54,7 @@ Lead → Kunde → Projekt → Angebot → Auftrag → Einkauf → Lieferanten �
 ## v1.5 – Teil 1 Einkauf, Lieferanten und Lieferungen
 
 Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingang mit Teil-/Restmengen, automatische Bestellstatus-Aktualisierung und Dashboard-Kennzahlen für Einkauf und Lieferungen. Details: `docs/PURCHASING_AND_SUPPLIERS.md`.
+
+## v1.6 – Project Lifecycle, Rollen und Baustellenkommunikation
+
+Umgesetzt: zentrale Berechtigungen, erweiterte Projektakte, Timeline-Grundlage, Baustellenmeldungen, Bildreferenzen mit Storage-Abstraktion, interne Benachrichtigungen, Mitarbeiteransicht und Admin-Dashboard-Erweiterungen.

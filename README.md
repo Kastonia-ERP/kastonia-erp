@@ -152,3 +152,7 @@ Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellunge
 ## Procurement Workflow
 
 Der vollständige Beschaffungsprozess `Projekt → Bestellung → Lieferant → Lieferung → Wareneingang → Projektfortschritt` ist in der bestehenden Projektakte und im zentralen Store integriert. Enthalten sind erweiterte Lieferantenstammdaten, Bestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingänge mit Teil-/Restmengen und Reklamationen, automatische Status- und Projektfortschrittsupdates sowie neue Dashboard-KPIs. Details stehen in [Procurement Workflow](docs/PROCUREMENT_WORKFLOW.md).
+
+## Version v1.6 · Project Lifecycle
+
+Diese Version ergänzt zentrale Rollen (`ADMIN`, `MITARBEITER`), Projekt-Lifecycle-Felder, Timeline, Baustellenmeldungen, interne Benachrichtigungen, mobile Mitarbeiteransicht und Admin-Übersicht für Baustellenkommunikation. Demo-Accounts sind anonymisierte Demo-Logins ohne echte Passwörter.

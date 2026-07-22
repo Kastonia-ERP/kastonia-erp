@@ -5,7 +5,7 @@ export type ProjectStatus =
   | 'Neue Anfrage' | 'Kontaktaufnahme' | 'Termin vereinbart' | 'Aufmaß'
   | 'Angebot in Vorbereitung' | 'Angebot versendet' | 'Nachfassen'
   | 'Auftrag erhalten' | 'Auftragsbestätigung' | 'Bestellung Lieferant'
-  | 'Material ausstehend' | 'Montage geplant' | 'Montage läuft' | 'Nacharbeit'
+  | 'Material ausstehend' | 'Material teilweise vorhanden' | 'Material vollständig vorhanden' | 'Montage geplant' | 'Montage läuft' | 'Nacharbeit'
   | 'Abnahme' | 'Rechnung gestellt' | 'Bezahlt' | 'Abgeschlossen'
   | 'Storniert' | 'Archiviert';
 
@@ -55,8 +55,32 @@ export interface Project {
   invoices: Invoice[]; payments: Payment[]; documents: Document[]; notes: ProjectNote[]; communication: CommunicationEntry[];
   tasks: Task[]; appointments: Appointment[]; financials: ProjectFinancials; tags: string[]; archived: boolean;
   value: number; montage: string;
+  progressPercent?: number; responsibleAdminId?: string; assignedEmployeeIds?: string[]; plannedInstallationDate?: ISODateString; actualInstallationStart?: ISODateString; actualInstallationEnd?: ISODateString;
+  openSiteReportIds?: string[]; openMaterialIssueIds?: string[]; openAcceptanceItemIds?: string[]; timeline?: ProjectTimelineEntry[]; assignments?: ProjectAssignment[];
+  installationNotes?: string; assignedTasks?: string[];
 }
 
-export const PROJECT_STATUSES: ProjectStatus[] = ['Neue Anfrage','Kontaktaufnahme','Termin vereinbart','Aufmaß','Angebot in Vorbereitung','Angebot versendet','Nachfassen','Auftrag erhalten','Auftragsbestätigung','Bestellung Lieferant','Material ausstehend','Montage geplant','Montage läuft','Nacharbeit','Abnahme','Rechnung gestellt','Bezahlt','Abgeschlossen','Storniert','Archiviert'];
+
+export const PROJECT_STATUSES: ProjectStatus[] = ['Neue Anfrage','Kontaktaufnahme','Termin vereinbart','Aufmaß','Angebot in Vorbereitung','Angebot versendet','Nachfassen','Auftrag erhalten','Auftragsbestätigung','Bestellung Lieferant','Material ausstehend','Material teilweise vorhanden','Material vollständig vorhanden','Montage geplant','Montage läuft','Nacharbeit','Abnahme','Rechnung gestellt','Bezahlt','Abgeschlossen','Storniert','Archiviert'];
 export const PROJECT_PHASES: ProjectPhase[] = ['Lead','Verkauf','Planung','Einkauf','Montage','Abrechnung','Abschluss'];
 export const PROJECT_PRIORITIES: ProjectPriority[] = ['Hoch','Mittel','Niedrig'];
+
+export type UserRole = 'ADMIN' | 'MITARBEITER';
+export type Permission = 'projects:read'|'projects:write'|'projects:delete'|'offers:read'|'offers:write'|'purchasing:manage'|'deliveries:manage'|'users:manage'|'siteReports:create'|'siteReports:read'|'siteReports:write'|'siteReports:close'|'images:manage'|'analytics:read'|'finance:read'|'masterData:write';
+export interface User { id:string; name:string; email:string; role:UserRole; active:boolean; demoLogin:string; assignedProjectIds:string[]; createdAt:ISODateString; updatedAt:ISODateString; }
+export interface ProjectAssignment { id:string; projectId:string; userId:string; role:'Verantwortlicher Admin'|'Montage'|'Aufmaß'|'Nacharbeit'; assignedAt:ISODateString; assignedBy:string; notes?:string; }
+export type ProjectTimelineEventType = 'Projekt erstellt'|'Angebot erstellt'|'Angebot versendet'|'Auftrag bestätigt'|'Bestellung erstellt'|'Lieferung eingetroffen'|'Montagetermin festgelegt'|'Mitarbeiter zugewiesen'|'Baustellenmeldung erstellt'|'Bild hinzugefügt'|'Material nachbestellt'|'Abnahme dokumentiert'|'Mangel erfasst'|'Meldung abgeschlossen'|'Projekt abgeschlossen'|'Status geändert'|'Interne Antwort';
+export interface ProjectTimelineEntry { id:string; eventType:ProjectTimelineEventType; createdAt:ISODateString; userId:string; userName:string; description:string; projectId:string; siteReportId?:string; documentId?:string; }
+export type SiteReportCategory = 'Material nachbestellen'|'Werkzeug benötigt'|'Sonstiges'|'Abnahmebilder'|'Zustandsbilder'|'Mangel'|'Beschädigung'|'Kundenwunsch'|'Nacharbeit'|'Sicherheitsproblem';
+export type SiteReportPriority = 'Normal'|'Wichtig'|'Dringend'|'Baustopp';
+export type SiteReportStatus = 'Neu'|'Gesehen'|'In Bearbeitung'|'Bestellt'|'Termin geplant'|'Erledigt'|'Abgelehnt';
+export type SiteReportImageCategory = 'Zustand vor Montage'|'Montagefortschritt'|'Material'|'Schaden'|'Mangel'|'Abnahme'|'Nacharbeit'|'Sonstiges';
+export interface SiteReportImage { id:string; fileReference:string; fileName:string; fileType:string; uploadedAt:ISODateString; uploadedBy:string; description:string; category:SiteReportImageCategory; capturedAt?:ISODateString; }
+export interface SiteReportComment { id:string; createdAt:ISODateString; authorId:string; authorName:string; text:string; internal:boolean; }
+export interface MaterialRequestDetails { articleOrMaterial:string; description:string; quantity:number; unit:string; desiredDeliveryDate?:ISODateString; deliveryLocation:string; possibleSupplier?:string; note?:string; linkedPurchaseOrderId?:string; deliveryDocumentedAt?:ISODateString; }
+export interface ToolRequestDetails { toolName:string; requiredQuantity:number; procurementType:'Kauf'|'Ausleihe'; usageDate?:ISODateString; constructionSite:string; note?:string; providedAt?:ISODateString; }
+export interface SiteReport { id:string; projectId:string; constructionSite:string; createdBy:string; assignedTo?:string; category:SiteReportCategory; title:string; description:string; priority:SiteReportPriority; status:SiteReportStatus; images:SiteReportImage[]; createdAt:ISODateString; updatedAt:ISODateString; closedAt?:ISODateString; internalResponse?:string; materialDetails?:MaterialRequestDetails; toolDetails?:ToolRequestDetails; quantity?:number; unit?:string; comments:SiteReportComment[]; }
+export interface Notification { id:string; userId:string; type:'SITE_REPORT'|'STATUS_CHANGE'|'INTERNAL_RESPONSE'|'PROJECT'; title:string; message:string; createdAt:ISODateString; readAt?:ISODateString; projectId?:string; siteReportId?:string; channel:'internal'|'external-ready'; priority:SiteReportPriority; }
+export interface StorageObjectReference { provider:'local-reference'|'vercel-blob'|'supabase-storage'|'s3'; reference:string; fileName:string; fileType:string; publicUrl?:string; }
+export const APP_VERSION_LABEL='v1.6 · Project Lifecycle';
+export const PROJECT_LIFECYCLE_STATUSES: ProjectStatus[] = ['Neue Anfrage','Angebot in Vorbereitung','Angebot versendet','Auftrag erhalten','Aufmaß','Bestellung Lieferant','Material ausstehend','Material teilweise vorhanden','Material vollständig vorhanden','Montage geplant','Montage läuft','Abnahme','Nacharbeit','Abgeschlossen','Storniert'];
