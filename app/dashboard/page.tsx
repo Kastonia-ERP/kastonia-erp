@@ -29,6 +29,11 @@ export default function Dashboard(){
  const purchaseNet=openPurchaseOrders.reduce((a,o)=>a+o.netTotal,0);
  const today=new Date().toISOString().slice(0,10);
  const deliveriesToday=state.deliveries.filter(d=>d.deliveryDate===today).length;
+ const operationsMaterialMissing=state.materialChecks.filter(check=>!check.complete).length;
+ const availableTeam=state.teamMembers.filter(member=>member.availability==='Verfügbar'&&!member.sick).length;
+ const availableVehicles=state.vehicles.filter(vehicle=>vehicle.available).length;
+ const todaysInstallations=state.projects.filter(project=>project.montage===today||project.plannedInstallationDate===today).length;
+
  const overdueDeliveries=openPurchaseOrders.filter(o=>o.expectedDeliveryDate&&new Date(o.expectedDeliveryDate+'T23:59:59')<new Date());
  const partialDeliveries=state.deliveries.filter(d=>d.status==='Teilweise geliefert').length;
  const openComplaints=state.deliveries.filter(d=>d.status==='Reklamation offen'||d.status==='Beschädigt'||d.items.some(i=>i.damagedQuantity>0)).length;
@@ -46,9 +51,13 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.6 · Project Lifecycle</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.7 · Operations Center</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
 
   <section className="cockpitKpis">
+   <article className="kpiCard featured"><small>Heutige Montagen</small><strong>{todaysInstallations}</strong><span>Operations Center Tagesplan</span></article>
+   <article className="kpiCard warning"><small>Material fehlt</small><strong>{operationsMaterialMissing}</strong><span>aus automatischen Materialchecks</span></article>
+   <article className="kpiCard"><small>Monteure verfügbar</small><strong>{availableTeam}</strong><span>{state.teamMembers.length} Mitarbeiter verwaltet</span></article>
+   <article className="kpiCard"><small>Fahrzeuge verfügbar</small><strong>{availableVehicles}</strong><span>{state.vehicles.length} Fahrzeuge im Fuhrpark</span></article>
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
    <article className="kpiCard"><small>Offene Forderungen</small><strong>{eur(receivables)}</strong><span>{overdue.length} überfällige Rechnung(en)</span></article>
    <article className="kpiCard"><small>Offene Lieferanten</small><strong>{eur(payables)}</strong><span>inkl. Aluprof und Lieferanten</span></article>
