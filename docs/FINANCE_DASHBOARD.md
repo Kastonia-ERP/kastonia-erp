@@ -1,26 +1,17 @@
-# KASTONIA ERP v1.9 – FINANCE DASHBOARD
+# KASTONIA ERP v1.9.1 · Finance Dashboard
 
-KASTONIA ERP v1.9 ergänzt Finance Control, Documents & Tax Control als betriebliche Kontroll- und Auswertungsfunktionen. Lexoffice beziehungsweise DATEV bleibt das führende Buchhaltungssystem.
+Diese Dokumentation beschreibt den Sprint **Field Operations, Documents & Finance Workflow**. Lexoffice beziehungsweise DATEV bleiben führend; KASTONIA ERP erfasst Referenzen, Belege, Zahlungen und Auswertungen nur betrieblich und erzeugt keine Steueranmeldung, keine automatischen Buchungen und keine rechtsverbindlichen Ausgangsrechnungen.
 
-## Grundsatz
+## Umsetzung
 
-- Rechnungen werden manuell mit externer Rechnungsnummer erfasst.
-- Dokumente werden als Datei-Referenzen/Metadaten abgelegt, nicht als Base64 im Datensatz.
-- Zahlungen und Teilzahlungen aktualisieren offene Beträge und Zahlungsstatus.
-- Auswertungen sind vorläufig und betrieblich; sie ersetzen keine Finanzbuchhaltung und keine Steueranmeldung.
-- CSV-Tabellen dienen der Vorbereitung, nicht als zertifizierter DATEV-Import.
+- Projektbezogene Arbeitszeiten sind Pflicht; interne Zeiten sind nur für Lager, Einkauf, Büro oder sonstige interne Tätigkeit zulässig.
+- Meldungen aus Material, Werkzeug, Fahrzeug, Nacharbeit, Mangel, Sicherheit und Dokumenten laufen in der zentralen Meldungszentrale zusammen.
+- Materialmeldungen erzeugen Einkaufslistenpositionen mit gruppierbarer Artikelmenge und sichtbarer Einzelherkunft.
+- Mobile Uploads verwenden Storage-Pfade und Metadaten statt Base64-Produktivdaten. Unterstützt werden PDF, JPEG, PNG, HEIC/HEIF und WebP mit Größen-, Typ- und Projektprüfung.
+- Dokumente, Projektbilder, Eingangsbelege, Ausgangsrechnungsreferenzen, Zahlungen, offene Posten, Steuertermine und vorläufige Umsatzsteuerübersichten bleiben über zentrale IDs projektverknüpft.
+- Der DATEV-Eingangsbelegexport wird als Provider-/Adapter-Architektur vorbereitet und ist eine strukturierte Übergabe an die Buchhaltung, kein zertifizierter DATEV-Import und keine direkte API.
+- Mitarbeiterrechte werden technisch geprüft: Mitarbeiter sehen eigene/zugewiesene Projekte, eigene Zeiten/Meldungen/Uploads und freigegebene Dokumente, aber keine Finanz-, Steuer- oder DATEV-Daten.
 
-## Umfang
+## Datenmodell und Tests
 
-- Ausgangs- und Eingangsrechnungen mit Projekt-, Angebots-, Auftrags-, Bestell- und Lieferbezug.
-- Zentrale Zahlungsverwaltung mit Korrektur/Storno über Statusfelder.
-- Forderungs- und Verbindlichkeitslisten mit Warnstufen.
-- Dokumentenmanagement mit Kategorien, Versionierung, Archivierung und chronologischer Projektakte.
-- Konfigurierbarer Steuerkalender mit Verantwortlichen, Erinnerungen, Wiederholungsregeln und Dokumenten.
-- Vorläufige Umsatzsteuer-/Vorsteuerübersicht auf Basis manuell erfasster Daten.
-- DATEV-/Lexoffice-Vorbereitung mit externem Belegkennzeichen, Buchungsnotiz, Steuerkennzeichen und Dokumentenreferenz.
-- Admin-Dashboard mit Finanzkennzahlen und Schnellzugriffen.
-
-## Berechtigungen
-
-Admins haben vollständigen Zugriff. Mitarbeiter werden technisch durch zentrale Permission-Funktionen von Rechnungen, Zahlungen, offenen Posten, Steuerdaten und Finanzauswertungen ausgeschlossen.
+Die zentralen v1.9.1-Modelle und Provider liegen in `lib/models/field-operations-191.ts`; automatisierte Abdeckung liegt in `tests/field-operations-191.test.js`.

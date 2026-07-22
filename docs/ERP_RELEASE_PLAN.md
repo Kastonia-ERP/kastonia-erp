@@ -137,3 +137,8 @@ KASTONIA ERP ist für Supabase Auth, PostgreSQL Row Level Security, Supabase Sto
 ## Release v1.9
 
 Titel: Finance, Documents & Tax Control. Schwerpunkt ist die manuelle Referenzverwaltung für Lexoffice/DATEV, nicht eine eigene Buchhaltung. Produktionsstart erfordert Prüfung der externen Workflows, Dateiablage und konfigurierten Steuertermine durch Admins/Steuerberatung.
+
+
+## v1.9.1 · Field Operations, Documents & Finance Workflow
+
+Der aktuelle Stand ergänzt projektbezogene Arbeitszeiterfassung, Mitarbeiter-Mobile-Ansicht, Meldungszentrale, Material-/Werkzeug-/Fahrzeugmeldungen, mobile Uploads, Projektgalerie, zentrales Dokumentenmanagement, manuelle Eingangsbelege, manuelle Ausgangsrechnungsreferenzen, Zahlungen, offene Posten, Steuerkalender, vorläufige Umsatzsteuerübersicht und DATEV-Eingangsbelegexport als strukturierte Buchhaltungsübergabe. Lexoffice/DATEV bleiben führend; keine direkte API, keine automatischen Buchungen, keine Steueranmeldungen.

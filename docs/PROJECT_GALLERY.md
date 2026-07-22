@@ -1,4 +1,4 @@
-# KASTONIA ERP v1.9.1 · Vat Overview
+# KASTONIA ERP v1.9.1 · Project Gallery
 
 Diese Dokumentation beschreibt den Sprint **Field Operations, Documents & Finance Workflow**. Lexoffice beziehungsweise DATEV bleiben führend; KASTONIA ERP erfasst Referenzen, Belege, Zahlungen und Auswertungen nur betrieblich und erzeugt keine Steueranmeldung, keine automatischen Buchungen und keine rechtsverbindlichen Ausgangsrechnungen.
 

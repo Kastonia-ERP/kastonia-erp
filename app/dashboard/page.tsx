@@ -46,7 +46,7 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.6 · Project Lifecycle</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.9.1 · Field Operations, Documents & Finance Workflow</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
@@ -70,6 +70,10 @@ export default function Dashboard(){
    <article className="kpiCard"><small>Lieferungen heute</small><strong>{deliveriesToday}</strong><span>{state.deliveries.length} Wareneingänge gesamt</span></article>
    <article className="kpiCard warning"><small>Offene Reklamationen</small><strong>{openComplaints}</strong><span>beschädigt oder Reklamation offen</span></article>
    <article className="kpiCard"><small>Offene Lieferantenzahlungen</small><strong>{eur(openSupplierPayments)}</strong><span>{Object.entries(ordersByStatus).map(([k,v])=>`${k}: ${v}`).join(' · ')}</span></article>
+
+   <article className="kpiCard warning"><small>Neue Meldungen</small><strong>{state.siteReports.filter(r=>r.status==='Neu').length}</strong><span>Kritisch {state.siteReports.filter(r=>r.priority==='Baustopp'||r.priority==='Dringend').length}</span></article>
+   <article className="kpiCard"><small>Laufende Arbeitszeiten</small><strong>{state.workTimeEntries?.filter(t=>t.status==='Entwurf'||!t.endTime).length||0}</strong><span>fehlende Abschlüsse prüfen</span></article>
+   <article className="kpiCard warning"><small>Eingangsbelege ohne Dokument</small><strong>{state.invoices.filter(x=>x.direction==='Eingang'&&!x.payments?.length).length}</strong><span>DATEV-Übergabe vorbereiten</span></article>
   </section>
 
   <section className="twoCol cockpitCharts">
