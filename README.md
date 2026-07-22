@@ -156,3 +156,8 @@ Der vollständige Beschaffungsprozess `Projekt → Bestellung → Lieferant → 
 ## Version v1.6 · Project Lifecycle
 
 Diese Version ergänzt zentrale Rollen (`ADMIN`, `MITARBEITER`), Projekt-Lifecycle-Felder, Timeline, Baustellenmeldungen, interne Benachrichtigungen, mobile Mitarbeiteransicht und Admin-Übersicht für Baustellenkommunikation. Demo-Accounts sind anonymisierte Demo-Logins ohne echte Passwörter.
+
+
+## v1.7 · Operations Center
+
+KASTONIA ERP v1.7 ergänzt Montageplanung, Mitarbeiterzuweisung, mobile Arbeitszeiterfassung, Baustellenmeldungen, zentrale Einkaufsliste, Materialbedarfe aus angenommenen Angeboten, Verbrauchsmaterial, Werkzeugverwaltung, Fahrzeug-/TÜV-/Serviceüberwachung, interne Benachrichtigungen und zentrale Berechtigungsprüfungen. Bestellungen werden weiterhin im bestehenden Einkaufsmodul erzeugt.

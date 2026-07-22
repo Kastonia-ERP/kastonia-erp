@@ -58,3 +58,8 @@ Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellunge
 ## v1.6 – Project Lifecycle, Rollen und Baustellenkommunikation
 
 Umgesetzt: zentrale Berechtigungen, erweiterte Projektakte, Timeline-Grundlage, Baustellenmeldungen, Bildreferenzen mit Storage-Abstraktion, interne Benachrichtigungen, Mitarbeiteransicht und Admin-Dashboard-Erweiterungen.
+
+
+## v1.7 · Operations Center
+
+KASTONIA ERP v1.7 ergänzt Montageplanung, Mitarbeiterzuweisung, mobile Arbeitszeiterfassung, Baustellenmeldungen, zentrale Einkaufsliste, Materialbedarfe aus angenommenen Angeboten, Verbrauchsmaterial, Werkzeugverwaltung, Fahrzeug-/TÜV-/Serviceüberwachung, interne Benachrichtigungen und zentrale Berechtigungsprüfungen. Bestellungen werden weiterhin im bestehenden Einkaufsmodul erzeugt.
