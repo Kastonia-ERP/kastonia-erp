@@ -161,3 +161,23 @@ test('complete delivery automatically marks order delivered', () => {
   const updated = updateOrderStatusFromDeliveries(order, [{ id:'WE1', purchaseOrderId:order.id, deliveryNoteNumber:'LS1', deliveryDate:'2026-07-23', status:'Vollständig geliefert', notes:'', documentReferences:[], items:[{ id:'D1', orderItemId:'I1', name:'Ware', deliveredQuantity:1, damagedQuantity:0, missingQuantity:0, unit:'Stk.' }] }]);
   assert.equal(updated.status, 'Geliefert');
 });
+const { calculateDeliveryStatus, updateProjectProgressFromProcurement } = require('../lib/models/purchasing.ts');
+
+test('delivery status detects expected partial complete damage and complaints', () => {
+  const order = calculatePurchaseOrder({ id:'BE20260006', orderNumber:'BE20260006', supplierId:'L1', supplierName:'Demo', orderDate:'2026-07-22', status:'Bestellt', paymentStatus:'Offen', deliveryAddress:'', note:'', documentReferences:[], createdAt:'', updatedAt:'', netTotal:0, vatTotal:0, grossTotal:0, items:[{ id:'I1', name:'Ware', description:'', quantity:2, unit:'Stk.', unitPriceNet:10, discount:0, vatRate:19, netTotal:0, vatTotal:0, grossTotal:0 }] });
+  assert.equal(calculateDeliveryStatus(order, [{ id:'D0', orderItemId:'I1', name:'Ware', deliveredQuantity:0, damagedQuantity:0, missingQuantity:2, unit:'Stk.' }]), 'Erwartet');
+  assert.equal(calculateDeliveryStatus(order, [{ id:'D1', orderItemId:'I1', name:'Ware', deliveredQuantity:1, damagedQuantity:0, missingQuantity:1, unit:'Stk.' }]), 'Teilweise geliefert');
+  assert.equal(calculateDeliveryStatus(order, [{ id:'D2', orderItemId:'I1', name:'Ware', deliveredQuantity:2, damagedQuantity:0, missingQuantity:0, unit:'Stk.' }]), 'Vollständig geliefert');
+  assert.equal(calculateDeliveryStatus(order, [{ id:'D3', orderItemId:'I1', name:'Ware', deliveredQuantity:1, damagedQuantity:1, missingQuantity:1, unit:'Stk.' }]), 'Reklamation offen');
+});
+
+test('procurement updates project cost and progress', () => {
+  const project = migrateToV09({ projects:[{ id:'P-PROC', customer:'C', title:'T', status:'Auftragsbestätigung', phase:'Planung' }] }).projects[0];
+  const order = calculatePurchaseOrder({ id:'BE20260007', orderNumber:'BE20260007', supplierId:'L1', supplierName:'Demo', projectId:'P-PROC', orderDate:'2026-07-22', status:'Bestellt', paymentStatus:'Offen', deliveryAddress:'', note:'', documentReferences:[], createdAt:'', updatedAt:'', netTotal:0, vatTotal:0, grossTotal:0, items:[{ id:'I1', name:'Ware', description:'', quantity:2, unit:'Stk.', unitPriceNet:100, discount:0, vatRate:19, netTotal:0, vatTotal:0, grossTotal:0 }] });
+  const updated = updateProjectProgressFromProcurement([project], [order], new Date('2026-07-22T00:00:00Z'))[0];
+  assert.equal(updated.status, 'Material ausstehend');
+  assert.equal(updated.phase, 'Einkauf');
+  assert.equal(updated.financials.expectedCostNet, 200);
+  const delivered = updateProjectProgressFromProcurement([updated], [{ ...order, status:'Geliefert' }], new Date('2026-07-23T00:00:00Z'))[0];
+  assert.equal(delivered.status, 'Montage geplant');
+});

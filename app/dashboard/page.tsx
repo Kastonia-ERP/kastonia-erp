@@ -27,8 +27,11 @@ export default function Dashboard(){
  const openTasks=state.tasks.filter((x:Task)=>!x.done);
  const openPurchaseOrders=state.purchaseOrders.filter(o=>!['Geliefert','Storniert'].includes(o.status));
  const purchaseNet=openPurchaseOrders.reduce((a,o)=>a+o.netTotal,0);
+ const today=new Date().toISOString().slice(0,10);
+ const deliveriesToday=state.deliveries.filter(d=>d.deliveryDate===today).length;
  const overdueDeliveries=openPurchaseOrders.filter(o=>o.expectedDeliveryDate&&new Date(o.expectedDeliveryDate+'T23:59:59')<new Date());
  const partialDeliveries=state.deliveries.filter(d=>d.status==='Teilweise geliefert').length;
+ const openComplaints=state.deliveries.filter(d=>d.status==='Reklamation offen'||d.status==='Beschädigt'||d.items.some(i=>i.damagedQuantity>0)).length;
  const openSupplierPayments=state.purchaseOrders.filter(o=>o.paymentStatus!=='Bezahlt').reduce((a,o)=>a+o.grossTotal,0);
  const ordersByStatus=state.purchaseOrders.reduce<Record<string,number>>((acc,o)=>({...acc,[o.status]:(acc[o.status]||0)+1}),{});
  const horizon=(days:number)=>{
@@ -59,6 +62,9 @@ export default function Dashboard(){
    <article className="kpiCard"><small>Angebotsvolumen</small><strong>{eur(state.offers.reduce((a,o)=>a+o.gross,0))}</strong><span>Abschlussquote {state.offers.length?Math.round(state.offers.filter((o)=>o.status==='Gewonnen').length/state.offers.length*100):0} %</span></article>
    <article className="kpiCard"><small>Offene Bestellungen</small><strong>{openPurchaseOrders.length}</strong><span>Netto {eur(purchaseNet)}</span></article>
    <article className="kpiCard warning"><small>Überfällige Lieferungen</small><strong>{overdueDeliveries.length}</strong><span>Teillieferungen {partialDeliveries}</span></article>
+   <article className="kpiCard"><small>Lieferanten</small><strong>{state.suppliers.filter(s=>s.active).length}</strong><span>{state.suppliers.length} Stammdatensätze gesamt</span></article>
+   <article className="kpiCard"><small>Lieferungen heute</small><strong>{deliveriesToday}</strong><span>{state.deliveries.length} Wareneingänge gesamt</span></article>
+   <article className="kpiCard warning"><small>Offene Reklamationen</small><strong>{openComplaints}</strong><span>beschädigt oder Reklamation offen</span></article>
    <article className="kpiCard"><small>Offene Lieferantenzahlungen</small><strong>{eur(openSupplierPayments)}</strong><span>{Object.entries(ordersByStatus).map(([k,v])=>`${k}: ${v}`).join(' · ')}</span></article>
   </section>
 
