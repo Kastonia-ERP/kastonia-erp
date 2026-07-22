@@ -1,3 +1,33 @@
+# PR #18 – Rebase- und Mergefähigkeitsbericht
+
+## Ausgangslage
+
+- Bearbeitet wurde der Branch `codex/improve-mobile-employee-view-and-planning`.
+- Der lokal verfügbare Stand basiert auf `50874e6` (`Merge pull request #20 from Kastonia-ERP/codex/uberarbeite-kalenderdesign-vollstandig`) und enthält damit die lokal vorhandenen Main-Änderungen bis einschließlich PR #20.
+- Ein Remote-Fetch von `origin/main` und `pull/18/head` wurde versucht, war in dieser Umgebung aber durch den Git-HTTPS-Tunnel mit `CONNECT tunnel failed, response 403` blockiert.
+- Es wurden keine Änderungen aus PR #21 oder PR #22 manuell übernommen und keine neuen Funktionen implementiert.
+
+## Konfliktauflösung
+
+- Im lokal verfügbaren Repository lagen keine Git-Konfliktmarker vor.
+- Die geprüften Konfliktbereiche wurden fachlich validiert statt per GitHub-Webeditor bearbeitet.
+- Main-Funktionen aus den späteren lokal vorhandenen Main-Merges wurden beibehalten: Cloud-Foundation, Finanz-/DATEV-Dokumentenfluss, Operations Center, Projektlebenszyklus, Beschaffung, Kalender-/Personalverfügbarkeit und aktualisierte Navigation.
+- PR-#18-Funktionen wurden beibehalten: mobile Mitarbeiteransicht, Projekt-Teamverwaltung, Mitarbeiterzuweisungen, Rollen, geplante Stunden, optionale Fahrzeugzuweisung, Einsatzplanung, Drag-and-Drop-Zuweisung, Doppelbelegungserkennung und Berechtigungslogik.
+
+## Prüfbereiche
+
+- `README.md`, `docs/ERP_ROADMAP.md`, `docs/MOBILE_EMPLOYEE_EXPERIENCE.md` und `docs/WORKFORCE_PLANNING.md` enthalten weiterhin die Dokumentationsspuren zur mobilen Mitarbeitererfahrung, Verfügbarkeit und Workforce-Planung.
+- `app/dashboard/page.tsx`, `app/einsatzplanung/page.tsx`, `app/mitarbeiter-mobile/page.tsx`, `app/personalplanung/page.tsx`, `components/Nav.tsx` und `app/globals.css` wurden auf Erhalt der relevanten UI-Flows geprüft.
+- `lib/store.tsx`, `lib/models/operations.ts`, `lib/models/permissions.ts` und `lib/models/workforce-availability.ts` behalten die zentralen Modelle für Mitarbeiter, Zuweisungen, Fahrzeuge, Berechtigungen, Kapazität und Konflikte.
+- Die vorhandenen Tests decken die mobile Mitarbeiteransicht, Personalplanung, Zuweisungslogik, Doppelbelegungserkennung, Fahrzeugkonflikte, Qualifikationen und Berechtigungen ab.
+
+## Testergebnisse
+
+- `npm install` lief erfolgreich durch; die Umgebung meldete nur Warnungen zu `http-proxy` und zur lokalen Node-Version `v24.15.0` gegenüber dem Projekt-Engine-Bereich `>=20 <23`.
+- `npm run typecheck` lief erfolgreich durch.
+- `npm test` lief erfolgreich durch: 75 Tests bestanden.
+- `npm run build` lief erfolgreich durch; Next.js meldete nur Wartungshinweise zu `baseline-browser-mapping` und zur künftig deprecated `middleware`-Konvention.
+
 # KASTONIA ERP v0.8 – Technischer Audit
 
 ## Umfang
