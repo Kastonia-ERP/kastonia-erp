@@ -23,3 +23,7 @@ KASTONIA ERP v1.7 ergänzt Montageplanung, Mitarbeiterzuweisung, mobile Arbeitsz
 ## v1.8 · Cloud Foundation
 
 KASTONIA ERP ist für Supabase Auth, PostgreSQL Row Level Security, Supabase Storage, kontrollierte lokale Datenmigration und Vercel-Deployments vorbereitet. Mitarbeiter sehen ausschließlich eigene, zugewiesene, vergangene oder durch eigene Zeiten/Meldungen/Bilder belegte Baustellen; Preise, Margen, Rechnungen und Lieferantenkonditionen bleiben für Mitarbeiter serverseitig gesperrt.
+
+## Finance-Control-Berechtigungen v1.9
+
+ADMIN erhält vollständigen Zugriff auf Finanzen, Dokumente und Steuerkalender. MITARBEITER erhält keinen Zugriff auf Rechnungen, Zahlungen, offene Posten, Umsatz-/Kostenwerte, Steuerdaten oder Finanzauswertungen; freigegebene Baustellendokumente und Bilder bleiben separat zu behandeln.

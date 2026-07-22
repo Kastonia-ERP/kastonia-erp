@@ -1,3 +1,1 @@
-export * from './project';
-
 export * from '../models/finance';
