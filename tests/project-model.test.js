@@ -25,11 +25,15 @@ test('migrates v0.7 projects without deleting legacy data', () => {
   assert.equal(state.projects[0].status, 'Bestellung Lieferant');
   assert.equal(state.projects[0].customer, 'Altbestand');
   assert.equal(state.projects[0].financials.expectedRevenueGross, 1190);
+  assert.equal(migrateToV09({ projects: [{ id: 'P-BAD', status: 'Unbekannter Altstatus' }] }).projects[0].status, 'Neue Anfrage');
 });
 
-test('loads v0.7 storage as fallback', () => {
-  const storage = { getItem: (key) => key === 'kastonia-erp-v07' ? JSON.stringify({ projects: [{ id: 'P-1', customer: 'C', title: 'T' }] }) : null };
-  assert.equal(loadPersistedState(storage).projects[0].id, 'P-1');
+test('loads v0.9 first and v0.7 storage as fallback', () => {
+  const fallbackStorage = { getItem: (key) => key === 'kastonia-erp-v07' ? JSON.stringify({ projects: [{ id: 'P-1', customer: 'C', title: 'T' }] }) : null };
+  assert.equal(loadPersistedState(fallbackStorage).projects[0].id, 'P-1');
+
+  const currentStorage = { getItem: (key) => key === 'kastonia-erp-v09' ? JSON.stringify({ projects: [{ id: 'P-9', customer: 'C9', title: 'T9' }] }) : JSON.stringify({ projects: [{ id: 'P-7' }] }) };
+  assert.equal(loadPersistedState(currentStorage).projects[0].id, 'P-9');
 });
 
 test('updates status and timestamp safely', () => {
