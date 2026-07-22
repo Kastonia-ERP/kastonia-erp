@@ -39,3 +39,8 @@ Diese Dokumentation beschreibt die Cloud-Grundlage für den sicheren Onlinebetri
 - Steuertermine durch Admins/Steuerberatung konfigurieren.
 - CSV-Vorbereitung nicht als zertifizierten DATEV-Import kommunizieren.
 - Mitarbeiterzugriff auf Finanz- und Steuerdaten testen.
+
+
+## v1.9.1 · Field Operations, Documents & Finance Workflow
+
+Der aktuelle Stand ergänzt projektbezogene Arbeitszeiterfassung, Mitarbeiter-Mobile-Ansicht, Meldungszentrale, Material-/Werkzeug-/Fahrzeugmeldungen, mobile Uploads, Projektgalerie, zentrales Dokumentenmanagement, manuelle Eingangsbelege, manuelle Ausgangsrechnungsreferenzen, Zahlungen, offene Posten, Steuerkalender, vorläufige Umsatzsteuerübersicht und DATEV-Eingangsbelegexport als strukturierte Buchhaltungsübergabe. Lexoffice/DATEV bleiben führend; keine direkte API, keine automatischen Buchungen, keine Steueranmeldungen.
