@@ -1,12 +1,12 @@
-# KASTONIA ERP Web-App v0.8
+# KASTONIA ERP Web-App v1.5
 
 KASTONIA ERP ist eine projektorientierte ERP-Web-App. Der aktuelle Stand fokussiert sich auf ein Geschäftsführer-Business-Cockpit und die technische Planung für den Ausbau zur vollständigen ERP-Suite.
 
 ## Aktueller Projektstand
 
-Die Anwendung enthält in v0.8 ein Business-Cockpit als Startpunkt für operative und kaufmännische Transparenz.
+Die Anwendung enthält in v1.5 den ersten Teil der Core Business Suite mit Business-Cockpit, Angebots-Engine, Lieferantenverwaltung, Einkauf und Lieferungen.
 
-### Neu in v0.8
+### Neu in v1.5 Core Business Suite
 
 - Geschäftsführer-Business-Cockpit als neue Startseite
 - Live-KPIs für Liquidität, Forderungen, Lieferanten, Steuern, Umsatz und Gewinn
@@ -15,6 +15,10 @@ Die Anwendung enthält in v0.8 ein Business-Cockpit als Startpunkt für operativ
 - Automatischer Handlungsbedarf aus Rechnungen, Steuern und Aufgaben
 - Aluprof-Rechnung und Gewerbesteuertermine ergänzt
 - Responsive für Desktop, iPad und Smartphone
+- Lieferantenverwaltung mit Lieferantenakte, Suche, Filter, Kategorien und Projektverknüpfungen
+- Einkauf mit Lieferantenbestellungen, Positionen, Rabatt-/Mehrwertsteuerberechnung und Nummernkreis `BEYYYYNNNN`
+- Wareneingang mit Teillieferungen, Restmengen, beschädigter Ware, Reklamationsnotizen und automatischen Statuswechseln
+- Dashboard-Kennzahlen für offene Bestellungen, Lieferanten, Bestellwert, überfällige Lieferungen und Lieferstatus
 
 ## Projektvision
 
@@ -29,6 +33,7 @@ Die technische Planung ist in den folgenden Dokumenten beschrieben:
 - [ERP Roadmap](docs/ERP_ROADMAP.md)
 - [ERP Architektur](docs/ERP_ARCHITECTURE.md)
 - [ERP Releaseplan](docs/ERP_RELEASE_PLAN.md)
+- [Einkauf, Lieferanten und Lieferungen](docs/PURCHASING.md)
 
 ## Roadmap-Überblick
 
@@ -142,4 +147,4 @@ Das Projekt ist weiterhin mit Vercel kompatibel, kann aber genauso auf einem eig
 
 ## v1.5 – Teil 1 Einkauf, Lieferanten und Lieferungen
 
-Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingang mit Teil-/Restmengen, automatische Bestellstatus-Aktualisierung und Dashboard-Kennzahlen für Einkauf und Lieferungen. Details: `docs/PURCHASING_AND_SUPPLIERS.md`.
+Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingang mit Teil-/Restmengen, automatische Bestellstatus-Aktualisierung und Dashboard-Kennzahlen für Einkauf und Lieferungen. Details: `docs/PURCHASING.md` und `docs/PURCHASING_AND_SUPPLIERS.md`.
