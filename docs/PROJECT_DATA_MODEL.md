@@ -61,7 +61,7 @@ Projektphasen (`ProjectPhase`) sind bewusst gröber: Lead, Verkauf, Planung, Ein
 1. Beim Laden wird zuerst `kastonia-erp-v09` gelesen.
 2. Wenn kein v0.9-Backup vorhanden ist, wird `kastonia-erp-v07` gelesen.
 3. Legacy-Projekte werden durch `normalizeProject` um fehlende v0.9-Felder ergänzt.
-4. Alte Statuswerte werden sicher gemappt, z. B. `Material bestellt` zu `Bestellung Lieferant`.
+4. Alte Statuswerte werden sicher gemappt, z. B. `Material bestellt` zu `Bestellung Lieferant`; unbekannte Altwerte fallen kontrolliert auf `Neue Anfrage` zurück.
 5. Bei Fehlern wird eine Warnung ausgegeben und der alte localStorage-Inhalt bleibt unangetastet.
 6. Persistiert wird ausschließlich in `kastonia-erp-v09`; der alte Key wird nicht automatisch gelöscht.
 

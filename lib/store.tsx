@@ -2,6 +2,7 @@
 import React,{createContext,useContext,useEffect,useMemo,useState} from 'react';
 import type {Appointment,Customer,Invoice,Offer,Project,Task} from './types';
 import {demoProjects} from './models/demo-data';
+import {PROJECT_STATUSES} from './types';
 import {LEGACY_STORAGE_KEY_V07,PERSISTENCE_SCHEMA_VERSION,STORAGE_KEY_V09,createProjectNumber} from './models/project-helpers';
 
 export type {Appointment,Customer,Invoice,Offer,Project,Task} from './types';
@@ -32,7 +33,8 @@ export const initial:State={
 type LegacyProject = Partial<Omit<Project, 'status'>> & {id:string;customer?:string;title?:string;value?:number;status?:string;montage?:string};
 export function normalizeProject(raw:LegacyProject, index=0):Project{
  const now=new Date().toISOString();
- const mappedStatus = (raw.status==='Lead'?'Neue Anfrage':raw.status==='Angebot'?'Angebot in Vorbereitung':raw.status==='Auftrag'?'Auftrag erhalten':raw.status==='Material bestellt'?'Bestellung Lieferant':raw.status==='Rechnung offen'?'Rechnung gestellt':raw.status||'Neue Anfrage') as Project['status'];
+ const legacyStatusMap: Record<string, Project['status']> = {'Lead':'Neue Anfrage','Angebot':'Angebot in Vorbereitung','Auftrag':'Auftrag erhalten','Material bestellt':'Bestellung Lieferant','Rechnung offen':'Rechnung gestellt'};
+ const mappedStatus = raw.status && PROJECT_STATUSES.includes(raw.status as Project['status']) ? raw.status as Project['status'] : legacyStatusMap[raw.status || ''] || 'Neue Anfrage';
  const base: Project = {projectNumber:raw.projectNumber||createProjectNumber(new Date(),index+1),title:raw.title||'Unbenanntes Projekt',customer:raw.customer||'Unbekannt',contactPersons:raw.contactPersons||[],projectAddress:raw.projectAddress||{street:'',postalCode:'',city:'',country:'DE'},billingAddress:raw.billingAddress||{street:'',postalCode:'',city:'',country:'DE'},leadSource:raw.leadSource||'Sonstiges',isObiLead:raw.isObiLead||false,projectType:raw.projectType||'Sonstiges',status:mappedStatus,phase:raw.phase||'Lead',priority:raw.priority||'Mittel',responsible:raw.responsible||'',createdAt:raw.createdAt||now,updatedAt:raw.updatedAt||now,measurements:raw.measurements||[],offers:raw.offers||[],orderConfirmations:raw.orderConfirmations||[],supplierOrders:raw.supplierOrders||[],installations:raw.installations||[],invoices:raw.invoices||[],payments:raw.payments||[],documents:raw.documents||[],notes:raw.notes||[],communication:raw.communication||[],tasks:raw.tasks||[],appointments:raw.appointments||[],financials:raw.financials||{currency:'EUR',expectedRevenueNet:raw.value||0,expectedRevenueGross:raw.value||0,expectedCostNet:0,expectedCostGross:0,customerPaid:0,supplierPaid:0},tags:raw.tags||[],archived:raw.archived||false,value:raw.value||raw.financials?.expectedRevenueGross||0,montage:raw.montage||raw.installations?.[0]?.plannedStart||'',id:raw.id};
  return {...base,...raw,status:mappedStatus,value:base.value,montage:base.montage};
 }
