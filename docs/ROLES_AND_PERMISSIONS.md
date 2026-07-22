@@ -13,3 +13,8 @@ Mitarbeiter sehen nur zugewiesene Projekte, erstellen Meldungen, Notizen und Bil
 ## Zentralisierung
 
 Die Berechtigungslogik liegt in `lib/models/permissions.ts`. UI-Ausblendungen sind nur Ergänzung; geschützte Aktionen müssen diese zentralen Prüfungen verwenden.
+
+
+## v1.7 · Operations Center
+
+KASTONIA ERP v1.7 ergänzt Montageplanung, Mitarbeiterzuweisung, mobile Arbeitszeiterfassung, Baustellenmeldungen, zentrale Einkaufsliste, Materialbedarfe aus angenommenen Angeboten, Verbrauchsmaterial, Werkzeugverwaltung, Fahrzeug-/TÜV-/Serviceüberwachung, interne Benachrichtigungen und zentrale Berechtigungsprüfungen. Bestellungen werden weiterhin im bestehenden Einkaufsmodul erzeugt.
