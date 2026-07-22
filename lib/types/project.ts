@@ -44,3 +44,4 @@ export interface Project {
 
 export const PROJECT_STATUSES: ProjectStatus[] = ['Neue Anfrage','Kontaktaufnahme','Termin vereinbart','Aufmaß','Angebot in Vorbereitung','Angebot versendet','Nachfassen','Auftrag erhalten','Auftragsbestätigung','Bestellung Lieferant','Material ausstehend','Montage geplant','Montage läuft','Nacharbeit','Abnahme','Rechnung gestellt','Bezahlt','Abgeschlossen','Storniert','Archiviert'];
 export const PROJECT_PHASES: ProjectPhase[] = ['Lead','Verkauf','Planung','Einkauf','Montage','Abrechnung','Abschluss'];
+export const PROJECT_PRIORITIES: ProjectPriority[] = ['Hoch','Mittel','Niedrig'];

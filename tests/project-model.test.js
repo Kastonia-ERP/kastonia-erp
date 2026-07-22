@@ -14,7 +14,7 @@ require.extensions['.ts'] = require.extensions['.tsx'] = (module, filename) => {
   const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.React, esModuleInterop: true } }).outputText;
   module._compile(output, filename);
 };
-const { changeProjectStatus, calculateOpenCustomerPayment, calculateOpenSupplierPayment, calculateProjectMargin } = require('../lib/models/project-helpers.ts');
+const { changeProjectStatus, calculateOpenCustomerPayment, calculateOpenSupplierPayment, calculateProjectMargin, calculateProjectMarginPercent, findProjectById, getProjectRecordStep, updateProjectBaseData } = require('../lib/models/project-helpers.ts');
 const { loadPersistedState, migrateToV09 } = require('../lib/store.tsx');
 
 test('migrates v0.7 projects without deleting legacy data', () => {
@@ -48,4 +48,34 @@ test('calculates margin and open payments', () => {
   assert.equal(calculateProjectMargin({ expectedRevenueNet: 10000, expectedCostNet: 7250.125 }), 2749.88);
   assert.equal(calculateOpenCustomerPayment({ expectedRevenueGross: 11900, customerPaid: 1900 }), 10000);
   assert.equal(calculateOpenSupplierPayment({ expectedCostGross: 5950, supplierPaid: 6000 }), 0);
+});
+
+
+test('finds project by id and returns undefined for unknown id', () => {
+  const state = migrateToV09({ projects: [{ id: 'P-FIND', customer: 'C', title: 'T' }] });
+  assert.equal(findProjectById(state.projects, 'P-FIND').title, 'T');
+  assert.equal(findProjectById(state.projects, 'P-UNKNOWN'), undefined);
+});
+
+test('updates editable base data and touches updatedAt', () => {
+  const project = migrateToV09({ projects: [{ id: 'P-EDIT', customer: 'C', title: 'T', updatedAt: '2026-01-01T00:00:00.000Z' }] }).projects[0];
+  const updated = updateProjectBaseData(project, { status: 'Montage geplant', phase: 'Montage', priority: 'Hoch', responsible: 'Kastonia Team', montage: '2026-08-01' }, '2026-07-22T13:00:00.000Z');
+  assert.equal(updated.status, 'Montage geplant');
+  assert.equal(updated.phase, 'Montage');
+  assert.equal(updated.priority, 'Hoch');
+  assert.equal(updated.responsible, 'Kastonia Team');
+  assert.equal(updated.montage, '2026-08-01');
+  assert.equal(updated.updatedAt, '2026-07-22T13:00:00.000Z');
+});
+
+test('calculates margin percent', () => {
+  assert.equal(calculateProjectMarginPercent({ expectedRevenueNet: 10000, expectedCostNet: 7500 }), 25);
+  assert.equal(calculateProjectMarginPercent({ expectedRevenueNet: 0, expectedCostNet: 7500 }), 0);
+});
+
+test('maps project status to visible record step', () => {
+  assert.equal(getProjectRecordStep('Kontaktaufnahme'), 'Kontakt');
+  assert.equal(getProjectRecordStep('Angebot versendet'), 'Angebot');
+  assert.equal(getProjectRecordStep('Material ausstehend'), 'Bestellung');
+  assert.equal(getProjectRecordStep('Rechnung gestellt'), 'Rechnung');
 });

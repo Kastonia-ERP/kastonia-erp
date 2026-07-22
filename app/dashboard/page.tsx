@@ -36,7 +36,7 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP 0.8</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP 0.9</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
