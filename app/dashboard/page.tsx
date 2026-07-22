@@ -2,6 +2,7 @@
 import Shell from '../../components/Shell';
 import {eur,useStore,type Entry,type Invoice,type TaxEvent} from '../../lib/store';
 import type {Appointment,Project,Task} from '../../lib/types';
+import {workforcePlanningMetrics} from '../../lib/models/operations';
 
 const monthNames=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const gross=(x:Invoice)=>x.net*(1+(x.vatRate<0?0:x.vatRate/100));
@@ -45,6 +46,7 @@ export default function Dashboard(){
  const monthlyProfit=[8200,9400,12100,15800,17200,22100,profit,19400,23800,21100,17600,26500];
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
+ const workforce=workforcePlanningMetrics(state.projects,state.employeeAssignments,today);
  return <Shell>
   <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.6 · Project Lifecycle</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
 
@@ -70,6 +72,10 @@ export default function Dashboard(){
    <article className="kpiCard"><small>Lieferungen heute</small><strong>{deliveriesToday}</strong><span>{state.deliveries.length} Wareneingänge gesamt</span></article>
    <article className="kpiCard warning"><small>Offene Reklamationen</small><strong>{openComplaints}</strong><span>beschädigt oder Reklamation offen</span></article>
    <article className="kpiCard"><small>Offene Lieferantenzahlungen</small><strong>{eur(openSupplierPayments)}</strong><span>{Object.entries(ordersByStatus).map(([k,v])=>`${k}: ${v}`).join(' · ')}</span></article>
+   <article className="kpiCard warning"><small>Nicht zugewiesene Projekte</small><strong>{workforce.unassignedProjects}</strong><span>Einsatzplanung prüfen</span></article>
+   <article className="kpiCard warning"><small>Projekte ohne Teamleiter</small><strong>{workforce.projectsWithoutTeamLead}</strong><span>Team-Reiter in Projektakte</span></article>
+   <article className="kpiCard warning"><small>Doppelbelegte Mitarbeiter</small><strong>{workforce.doubleBookedEmployees}</strong><span>Konflikte in Einsatzplanung</span></article>
+   <article className="kpiCard warning"><small>Heute nicht besetzt</small><strong>{workforce.unstaffedSitesToday}</strong><span>Baustellen ohne Team heute</span></article>
   </section>
 
   <section className="twoCol cockpitCharts">

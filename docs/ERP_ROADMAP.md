@@ -72,3 +72,8 @@ KASTONIA ERP ist für Supabase Auth, PostgreSQL Row Level Security, Supabase Sto
 ## v1.9 · Finance, Documents & Tax Control
 
 Umgesetzt: Finance-Control-Datenmodell, Zahlungslogik, OP-Listen, Dokumentenreferenzen, Steuerkalender, vorläufige USt/VSt-Übersicht, CSV-Importvorbereitung, Admin-Dashboard und technische Mitarbeiter-Sperren für Finanz-/Steuerdaten.
+
+## v1.9.2 UX Mobile & Einsatzplanung
+- Mobile-First Mitarbeiterstartseite für Monteure.
+- Projekt-Teamverwaltung mit Rollen, Zeitraum, Stunden und Fahrzeug.
+- Admin-Einsatzplanung mit Drag-&-Drop und Konfliktkennzahlen.

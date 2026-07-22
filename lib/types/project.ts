@@ -67,7 +67,9 @@ export const PROJECT_PRIORITIES: ProjectPriority[] = ['Hoch','Mittel','Niedrig']
 
 export type EmployeeAvailability = 'Verfügbar'|'Eingeteilt'|'Urlaub'|'Krank'|'Nicht verfügbar';
 export interface Employee { id:string; name:string; phone:string; email:string; role:string; active:boolean; skills:string[]; driverLicenseClass:string; assignedVehicleIds:string[]; currentSiteIds:string[]; availability:EmployeeAvailability; vacation:ISODateString[]; sickness:ISODateString[]; notes:string; }
-export interface EmployeeAssignment { id:string; projectId:string; montageId:string; employeeId:string; date:ISODateString; startTime:string; plannedEndTime:string; teamRole:string; teamLead:boolean; vehicleId?:string; note:string; }
+export type ProjectTeamRole='Teamleiter'|'Monteur'|'Helfer'|'Service'|'Aufmaß'|'Lager'|'Sonstige'|'Montage';
+export const PROJECT_TEAM_ROLES:ProjectTeamRole[]=['Teamleiter','Monteur','Helfer','Service','Aufmaß','Lager','Sonstige'];
+export interface EmployeeAssignment { id:string; projectId:string; montageId:string; employeeId:string; date:ISODateString; startTime:string; plannedEndTime:string; teamRole:ProjectTeamRole|string; teamLead:boolean; vehicleId?:string; plannedHours?:number; note:string; }
 export type WorkActivityType='Anfahrt'|'Montage'|'Demontage'|'Aufmaß'|'Nacharbeit'|'Abnahme'|'Materialbeschaffung'|'Werkstatt'|'Lager'|'Büro'|'Sonstiges';
 export type WorkTimeStatus='Entwurf'|'Eingereicht'|'Geprüft'|'Freigegeben'|'Abgelehnt';
 export interface WorkTimeEntry { id:string; employeeId:string; projectId:string; constructionSite:string; date:ISODateString; startTime:string; endTime:string; breakMinutes:number; netWorkMinutes:number; travelMinutes:number; activity:WorkActivityType; note:string; status:WorkTimeStatus; createdAt:ISODateString; updatedAt:ISODateString; }
