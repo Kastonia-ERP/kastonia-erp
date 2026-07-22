@@ -13,3 +13,8 @@ Dieses Dokument beschreibt die v1.7-Funktionen für Montageplanung, Mitarbeiterz
 ## Mobile Ansicht
 
 Die mobile Mitarbeiteransicht priorisiert große Schaltflächen für Arbeitszeit starten/beenden, Pause, neue Meldung, Foto, Materialmangel, Werkzeug- und Fahrzeugproblem. Baustellen zeigen Projekt, Adresse, Kontakt, geplante Arbeiten, Team, Fahrzeug, Materialstatus, Checkliste, Zeiten, Meldungen, Bilder, Abnahme und Notizen ohne vertrauliche Finanzdaten.
+
+
+## v1.8 · Cloud Foundation
+
+KASTONIA ERP ist für Supabase Auth, PostgreSQL Row Level Security, Supabase Storage, kontrollierte lokale Datenmigration und Vercel-Deployments vorbereitet. Mitarbeiter sehen ausschließlich eigene, zugewiesene, vergangene oder durch eigene Zeiten/Meldungen/Bilder belegte Baustellen; Preise, Margen, Rechnungen und Lieferantenkonditionen bleiben für Mitarbeiter serverseitig gesperrt.

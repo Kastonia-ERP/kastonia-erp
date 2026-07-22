@@ -13,3 +13,8 @@ Dieses Dokument beschreibt die v1.7-Funktionen für Montageplanung, Mitarbeiterz
 ## Dashboard
 
 Kennzahlen zeigen heutige Baustellen, aktive Mitarbeiter, heutige Nettoarbeitszeit, offene Meldungen, defekte Werkzeuge, Fahrzeugwarnungen, offene Einkaufsliste, Baustopp-Meldungen, Abnahmen und Nacharbeiten. Schnellzugriffe führen zu Mitarbeiterzuweisung, Montageplanung, Einkaufsliste, Bestellung, Zeitprüfung, TÜV-Prüfung und Meldungsbearbeitung.
+
+
+## v1.8 · Cloud Foundation
+
+KASTONIA ERP ist für Supabase Auth, PostgreSQL Row Level Security, Supabase Storage, kontrollierte lokale Datenmigration und Vercel-Deployments vorbereitet. Mitarbeiter sehen ausschließlich eigene, zugewiesene, vergangene oder durch eigene Zeiten/Meldungen/Bilder belegte Baustellen; Preise, Margen, Rechnungen und Lieferantenkonditionen bleiben für Mitarbeiter serverseitig gesperrt.

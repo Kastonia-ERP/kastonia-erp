@@ -1,0 +1,6 @@
+import {migrateToV09,type State} from '../store';
+export type MigrationIssue={level:'error'|'warning';collection:string;id?:string;message:string};
+export type MigrationResult={dryRun:boolean;valid:boolean;inserted:number;updated:number;skipped:number;issues:MigrationIssue[];collections:string[]};
+export function readLocalData(raw:string):State{return migrateToV09(raw)}
+export function validateStateForCloud(state:State):MigrationIssue[]{const issues:MigrationIssue[]=[];for(const key of Object.keys(state) as (keyof State)[]){const value=state[key];if(Array.isArray(value)){const seen=new Set<string>();for(const item of value as any[]){if(!item?.id)issues.push({level:'error',collection:String(key),message:'Datensatz ohne ID'});else if(seen.has(item.id))issues.push({level:'warning',collection:String(key),id:item.id,message:'Duplikat erkannt'});else seen.add(item.id)}}}return issues;}
+export async function runControlledMigration(state:State,{dryRun=true}:{dryRun?:boolean}={}):Promise<MigrationResult>{const issues=validateStateForCloud(state);const collections=Object.keys(state).filter(k=>Array.isArray((state as any)[k]));const total=collections.reduce((sum,k)=>sum+((state as any)[k]?.length||0),0);return {dryRun,valid:!issues.some(i=>i.level==='error'),inserted:dryRun?0:total,updated:0,skipped:issues.length,issues,collections};}
