@@ -114,3 +114,8 @@ Monteurprozesse laufen mobil, Daten werden synchronisiert, und DATEV-Prozesse si
 - Migrationskonzept für bestehende Browserdaten.
 - Teststrategie für Fachmodule, Berechnungen und Migrationen.
 - Datenschutz- und Sicherheitskonzept für KI, Kundenportal und Monteur-App.
+
+
+## v1.5 – Teil 1 Einkauf, Lieferanten und Lieferungen
+
+Implementiert sind Lieferantenstammdaten, projektbezogene Lieferantenbestellungen mit Nummernkreis `BEYYYYNNNN`, Wareneingang mit Teil-/Restmengen, automatische Bestellstatus-Aktualisierung und Dashboard-Kennzahlen für Einkauf und Lieferungen. Details: `docs/PURCHASING_AND_SUPPLIERS.md`.
