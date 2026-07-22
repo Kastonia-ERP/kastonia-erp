@@ -133,3 +133,7 @@ KASTONIA ERP v1.7 ergänzt Montageplanung, Mitarbeiterzuweisung, mobile Arbeitsz
 ## v1.8 · Cloud Foundation
 
 KASTONIA ERP ist für Supabase Auth, PostgreSQL Row Level Security, Supabase Storage, kontrollierte lokale Datenmigration und Vercel-Deployments vorbereitet. Mitarbeiter sehen ausschließlich eigene, zugewiesene, vergangene oder durch eigene Zeiten/Meldungen/Bilder belegte Baustellen; Preise, Margen, Rechnungen und Lieferantenkonditionen bleiben für Mitarbeiter serverseitig gesperrt.
+
+## Release v1.9
+
+Titel: Finance, Documents & Tax Control. Schwerpunkt ist die manuelle Referenzverwaltung für Lexoffice/DATEV, nicht eine eigene Buchhaltung. Produktionsstart erfordert Prüfung der externen Workflows, Dateiablage und konfigurierten Steuertermine durch Admins/Steuerberatung.

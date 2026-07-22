@@ -30,3 +30,12 @@ Diese Dokumentation beschreibt die Cloud-Grundlage für den sicheren Onlinebetri
 - [ ] Admin-Benutzer Gökhan Karayel und Seda Karayel angelegt
 - [ ] Mindestens sechs Mitarbeiterprofile aktiv
 - [ ] Vercel Production Build erfolgreich
+
+## Finance-Control-Produktionsprüfung v1.9
+
+- Lexoffice/DATEV als führendes System bestätigen.
+- Keine automatische Rechnungsnummernvergabe im ERP aktivieren.
+- Dateiablage für Dokumentenpfade prüfen.
+- Steuertermine durch Admins/Steuerberatung konfigurieren.
+- CSV-Vorbereitung nicht als zertifizierten DATEV-Import kommunizieren.
+- Mitarbeiterzugriff auf Finanz- und Steuerdaten testen.
