@@ -1,9 +1,10 @@
 'use client';
 import Shell from '../../components/Shell';
-import {eur,useStore} from '../../lib/store';
+import {eur,useStore,type Entry,type Invoice,type TaxEvent} from '../../lib/store';
+import type {Appointment,Project,Task} from '../../lib/types';
 
 const monthNames=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const gross=(x:any)=>x.net*(1+(x.vatRate<0?0:x.vatRate/100));
+const gross=(x:Invoice)=>x.net*(1+(x.vatRate<0?0:x.vatRate/100));
 const daysBetween=(date:string)=>Math.ceil((new Date(date+'T12:00:00').getTime()-new Date().setHours(12,0,0,0))/86400000);
 
 function Sparkline({values}:{values:number[]}){
@@ -14,16 +15,16 @@ function Sparkline({values}:{values:number[]}){
 
 export default function Dashboard(){
  const {state}=useStore();
- const inc=state.entries.filter((x:any)=>x.type==='Einnahme').reduce((a:number,x:any)=>a+x.net,0);
- const exp=state.entries.filter((x:any)=>x.type==='Ausgabe').reduce((a:number,x:any)=>a+x.net,0);
+ const inc=state.entries.filter((x:Entry)=>x.type==='Einnahme').reduce((a:number,x:Entry)=>a+x.net,0);
+ const exp=state.entries.filter((x:Entry)=>x.type==='Ausgabe').reduce((a:number,x:Entry)=>a+x.net,0);
  const profit=inc-exp;
- const receivables=state.invoices.filter((x:any)=>x.direction==='Ausgang'&&x.status!=='Bezahlt').reduce((a:number,x:any)=>a+gross(x),0);
- const payables=state.invoices.filter((x:any)=>x.direction==='Eingang'&&x.status!=='Bezahlt').reduce((a:number,x:any)=>a+gross(x),0);
- const openTaxes=state.taxEvents.filter((x:any)=>x.status!=='Bezahlt').reduce((a:number,x:any)=>a+x.amount,0);
+ const receivables=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&x.status!=='Bezahlt').reduce((a:number,x:Invoice)=>a+gross(x),0);
+ const payables=state.invoices.filter((x:Invoice)=>x.direction==='Eingang'&&x.status!=='Bezahlt').reduce((a:number,x:Invoice)=>a+gross(x),0);
+ const openTaxes=state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt').reduce((a:number,x:TaxEvent)=>a+x.amount,0);
  const cash=state.settings.cashStart+inc-exp;
- const overdue=state.invoices.filter((x:any)=>x.direction==='Ausgang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<0);
- const activeProjects=state.projects.filter((x:any)=>!['Abgeschlossen','Storniert'].includes(x.status));
- const openTasks=state.tasks.filter((x:any)=>!x.done);
+ const overdue=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<0);
+ const activeProjects=state.projects.filter((x:Project)=>!['Abgeschlossen','Storniert'].includes(x.status));
+ const openTasks=state.tasks.filter((x:Task)=>!x.done);
  const openPurchaseOrders=state.purchaseOrders.filter(o=>!['Geliefert','Storniert'].includes(o.status));
  const purchaseNet=openPurchaseOrders.reduce((a,o)=>a+o.netTotal,0);
  const overdueDeliveries=openPurchaseOrders.filter(o=>o.expectedDeliveryDate&&new Date(o.expectedDeliveryDate+'T23:59:59')<new Date());
@@ -31,9 +32,9 @@ export default function Dashboard(){
  const openSupplierPayments=state.purchaseOrders.filter(o=>o.paymentStatus!=='Bezahlt').reduce((a,o)=>a+o.grossTotal,0);
  const ordersByStatus=state.purchaseOrders.reduce<Record<string,number>>((acc,o)=>({...acc,[o.status]:(acc[o.status]||0)+1}),{});
  const horizon=(days:number)=>{
-   const incoming=state.invoices.filter((x:any)=>x.direction==='Ausgang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<=days).reduce((a:number,x:any)=>a+gross(x),0);
-   const outgoing=state.invoices.filter((x:any)=>x.direction==='Eingang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<=days).reduce((a:number,x:any)=>a+gross(x),0);
-   const taxes=state.taxEvents.filter((x:any)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=days).reduce((a:number,x:any)=>a+x.amount,0);
+   const incoming=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+gross(x),0);
+   const outgoing=state.invoices.filter((x:Invoice)=>x.direction==='Eingang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+gross(x),0);
+   const taxes=state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=days).reduce((a:number,x:TaxEvent)=>a+x.amount,0);
    return {incoming,outgoing,taxes,end:cash+incoming-outgoing-taxes};
  };
  const f30=horizon(30),f60=horizon(60),f90=horizon(90);
@@ -52,7 +53,7 @@ export default function Dashboard(){
    <article className="kpiCard"><small>Umsatz netto</small><strong>{eur(inc)}</strong><span>Plan {eur(state.settings.revenuePlan)}</span></article>
    <article className="kpiCard"><small>Gewinn vor Steuern</small><strong>{eur(profit)}</strong><span>Marge {inc?((profit/inc)*100).toFixed(1):'0,0'} %</span></article>
    <article className="kpiCard"><small>Aktive Projekte</small><strong>{activeProjects.length}</strong><span>{state.projects.length} Projekte insgesamt</span></article>
-   <article className="kpiCard"><small>Offene Aufgaben</small><strong>{openTasks.length}</strong><span>{openTasks.filter((x:any)=>x.priority==='Hoch').length} mit hoher Priorität</span></article>
+   <article className="kpiCard"><small>Offene Aufgaben</small><strong>{openTasks.length}</strong><span>{openTasks.filter((x:Task)=>x.priority==='Hoch').length} mit hoher Priorität</span></article>
    <article className="kpiCard"><small>Angebote offen</small><strong>{state.offers.filter((o)=>!['Gewonnen','Verloren','Storniert'].includes(o.status)).length}</strong><span>Heute erstellt {state.offers.filter((o)=>o.date===new Date().toISOString().slice(0,10)).length}</span></article>
    <article className="kpiCard"><small>Nachfassen</small><strong>{state.offers.filter((o)=>o.status==='Nachfassen').length}</strong><span>Gewonnen {state.offers.filter((o)=>o.status==='Gewonnen').length} · Verloren {state.offers.filter((o)=>o.status==='Verloren').length}</span></article>
    <article className="kpiCard"><small>Angebotsvolumen</small><strong>{eur(state.offers.reduce((a,o)=>a+o.gross,0))}</strong><span>Abschlussquote {state.offers.length?Math.round(state.offers.filter((o)=>o.status==='Gewonnen').length/state.offers.length*100):0} %</span></article>
@@ -67,19 +68,19 @@ export default function Dashboard(){
   </section>
 
   <section className="forecastGrid">
-   {[['30 Tage',f30],['60 Tage',f60],['90 Tage',f90]].map(([label,data]:any)=><article className={`forecastCard ${data.end<0?'negative':''}`} key={label}><div><small>Liquidität in</small><h3>{label}</h3></div><strong>{eur(data.end)}</strong><dl><div><dt>Eingänge</dt><dd>+ {eur(data.incoming)}</dd></div><div><dt>Ausgänge</dt><dd>− {eur(data.outgoing)}</dd></div><div><dt>Steuern</dt><dd>− {eur(data.taxes)}</dd></div></dl></article>)}
+   {([['30 Tage',f30],['60 Tage',f60],['90 Tage',f90]] as const).map(([label,data])=><article className={`forecastCard ${data.end<0?'negative':''}`} key={label}><div><small>Liquidität in</small><h3>{label}</h3></div><strong>{eur(data.end)}</strong><dl><div><dt>Eingänge</dt><dd>+ {eur(data.incoming)}</dd></div><div><dt>Ausgänge</dt><dd>− {eur(data.outgoing)}</dd></div><div><dt>Steuern</dt><dd>− {eur(data.taxes)}</dd></div></dl></article>)}
   </section>
 
   <section className="twoCol">
    <article className="panel"><div className="panelHead"><div><h2>Aktueller Handlungsbedarf</h2><small>Automatisch aus offenen Daten ermittelt</small></div><a href="/aufgaben">Aufgaben öffnen</a></div>
-    {overdue.length>0&&<div className="alertRow dangerAlert"><b>Überfällige Forderungen</b><span>{overdue.length} Rechnung(en) · {eur(overdue.reduce((a:number,x:any)=>a+gross(x),0))}</span></div>}
+    {overdue.length>0&&<div className="alertRow dangerAlert"><b>Überfällige Forderungen</b><span>{overdue.length} Rechnung(en) · {eur(overdue.reduce((a:number,x:Invoice)=>a+gross(x),0))}</span></div>}
     {f30.end<0&&<div className="alertRow dangerAlert"><b>Liquidität in 30 Tagen negativ</b><span>Fehlbetrag {eur(Math.abs(f30.end))}</span></div>}
-    {state.taxEvents.filter((x:any)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=30).map((x:any)=><div className="alertRow taxAlert" key={x.id}><b>{x.type}</b><span>{new Date(x.date).toLocaleDateString('de-DE')} · {eur(x.amount)}</span></div>)}
-    {openTasks.slice(0,4).map((x:any)=><div className="alertRow" key={x.id}><b>{x.title}</b><span>Fällig {new Date(x.due).toLocaleDateString('de-DE')} · {x.priority}</span></div>)}
+    {state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=30).map((x:TaxEvent)=><div className="alertRow taxAlert" key={x.id}><b>{x.type}</b><span>{new Date(x.date).toLocaleDateString('de-DE')} · {eur(x.amount)}</span></div>)}
+    {openTasks.slice(0,4).map((x:Task)=><div className="alertRow" key={x.id}><b>{x.title}</b><span>Fällig {new Date(x.due).toLocaleDateString('de-DE')} · {x.priority}</span></div>)}
    </article>
-   <article className="panel"><div className="panelHead"><div><h2>Nächste Termine</h2><small>Montage, Aufmaß und Kundentermine</small></div><a href="/kalender">Kalender öffnen</a></div>{[...state.appointments].sort((a:any,b:any)=>a.date.localeCompare(b.date)).slice(0,6).map((x:any)=><div className="timelineRow" key={x.id}><time>{new Date(x.date).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})}</time><div><strong>{x.title}</strong><small>{x.type}</small></div></div>)}</article>
+   <article className="panel"><div className="panelHead"><div><h2>Nächste Termine</h2><small>Montage, Aufmaß und Kundentermine</small></div><a href="/kalender">Kalender öffnen</a></div>{[...state.appointments].sort((a:Appointment,b:Appointment)=>a.date.localeCompare(b.date)).slice(0,6).map((x:Appointment)=><div className="timelineRow" key={x.id}><time>{new Date(x.date).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})}</time><div><strong>{x.title}</strong><small>{x.type}</small></div></div>)}</article>
   </section>
 
-  <article className="panel"><div className="panelHead"><div><h2>Aktive Projekte</h2><small>Auftragswert und nächster Meilenstein</small></div><a href="/projekte">Projektübersicht</a></div><div className="tableWrap"><table><thead><tr><th>Kunde</th><th>Projekt</th><th>Status</th><th>Montage</th><th>Auftragswert</th></tr></thead><tbody>{activeProjects.map((x:any)=><tr key={x.id}><td><b>{x.customer}</b></td><td>{x.title}</td><td><span className="status blue">{x.status}</span></td><td>{x.montage?new Date(x.montage).toLocaleDateString('de-DE'):'offen'}</td><td><b>{eur(x.value)}</b></td></tr>)}</tbody></table></div></article>
+  <article className="panel"><div className="panelHead"><div><h2>Aktive Projekte</h2><small>Auftragswert und nächster Meilenstein</small></div><a href="/projekte">Projektübersicht</a></div><div className="tableWrap"><table><thead><tr><th>Kunde</th><th>Projekt</th><th>Status</th><th>Montage</th><th>Auftragswert</th></tr></thead><tbody>{activeProjects.map((x:Project)=><tr key={x.id}><td><b>{x.customer}</b></td><td>{x.title}</td><td><span className="status blue">{x.status}</span></td><td>{x.montage?new Date(x.montage).toLocaleDateString('de-DE'):'offen'}</td><td><b>{eur(x.value)}</b></td></tr>)}</tbody></table></div></article>
  </Shell>
 }
