@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 const items = [
   ['🏠','Dashboard','/dashboard'],
   ['📁','Projekte','/projekte'],
-  ['📐','Aufmaß','/projekte?ansicht=aufmass'],
   ['📥','Eingangsrechnungen','/rechnungen?typ=Eingang'],
   ['📤','Ausgangsrechnungen','/rechnungen?typ=Ausgang'],
   ['💶','Liquidität','/finanzen'],
