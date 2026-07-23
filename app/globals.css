@@ -71,3 +71,18 @@
 .calendarShell{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);gap:16px}.calendarGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.calendarDay{border:1px solid var(--line);border-radius:16px;background:#fff;min-height:112px;padding:10px;text-align:left;display:grid;align-content:start;gap:6px}.calendarDay.active{outline:3px solid rgba(229,167,25,.45);border-color:var(--gold)}.calendarEvent{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:999px;background:#e8f1fc;color:#14579e;padding:5px 7px;font-size:12px;font-weight:800}.dayAgenda{position:sticky;top:18px;align-self:start}.calendarBoard input,.dayAgenda input,.dayAgenda select,.bottomSheet input,.bottomSheet select,.planningViews select,.panel textarea,.dropZone select{border:1px solid var(--line);border-radius:12px;background:#fff;padding:11px 12px;min-height:44px}.panel textarea{width:100%;min-height:82px;margin-top:8px}.projectDayCard{cursor:pointer;text-align:left}.employeeAssignCard .actions,.requestRow .actions{display:flex;gap:8px;flex-wrap:wrap}.employeeAssignCard .actions button{border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 10px;font-weight:800;display:inline-flex;gap:6px;align-items:center}
 @media(max-width:1100px){.calendarShell{grid-template-columns:1fr}.dayAgenda{position:static}.calendarGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:760px){.calendarGrid{grid-template-columns:1fr}.calendarDay{min-height:76px}.calendarEvent{white-space:normal}.calendarShell{display:block}.calendarBoard,.dayAgenda{margin-bottom:14px}}
+
+/* Dashboard: Sekundaertexte auf farbigen Aufgaben- und Terminfeldern lesbar halten */
+.cockpitPriority .dangerAlert span,
+.cockpitPriority .timelineRow small{color:#fff}
+
+/* Dashboard-Kontrast: Aufgabenkarte und dunkle Terminansicht */
+.cockpitKpis .kpiCard.danger{border-left:5px solid #e45b52;background:#b42318;color:#fff}
+.cockpitKpis .kpiCard.danger small,
+.cockpitKpis .kpiCard.danger strong,
+.cockpitKpis .kpiCard.danger span{color:#fff}
+@media(prefers-color-scheme:dark){
+ .cockpitPriority .panelHead small,
+ .cockpitPriority .timelineRow strong,
+ .cockpitPriority .timelineRow small{color:#fff}
+}
