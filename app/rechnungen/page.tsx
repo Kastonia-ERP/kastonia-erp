@@ -14,6 +14,7 @@ export default function Page(){
  const [tab,setTab]=useState<'Ausgang'|'Eingang'>('Ausgang');
  const [show,setShow]=useState(false);
  const [paymentInvoiceId,setPaymentInvoiceId]=useState<string|null>(null);
+ const [paymentType,setPaymentType]=useState<'Teilzahlung'|'Vollständig'>('Teilzahlung');
  const [message,setMessage]=useState('');
  const [f,setF]=useState(emptyInvoice);
  const [payment,setPayment]=useState(emptyPayment);
@@ -33,23 +34,26 @@ export default function Page(){
 
  const openPayment=(invoice:Invoice)=>{
   setPaymentInvoiceId(invoice.id);
-  setPayment({...emptyPayment(),amount:simpleInvoiceOpen(invoice)});
+  setPaymentType('Teilzahlung');
+  setPayment({...emptyPayment(),amount:0});
   setMessage('');
  };
 
  const savePayment=()=>{
   if(!paymentInvoice)return;
   const open=simpleInvoiceOpen(paymentInvoice);
-  if(payment.amount<=0){setMessage('Bitte einen Zahlungsbetrag größer als 0 eingeben.');return;}
-  if(payment.amount>open){setMessage(`Der Betrag darf den offenen Rest von ${eur(open)} nicht überschreiten.`);return;}
+  const amount=paymentType==='Vollständig'?open:payment.amount;
+  if(amount<=0){setMessage('Bitte einen Zahlungsbetrag größer als 0 eingeben.');return;}
+  if(amount>open){setMessage(`Der Betrag darf den offenen Rest von ${eur(open)} nicht überschreiten.`);return;}
+  if(paymentType==='Teilzahlung'&&amount>=open){setMessage('Für eine Teilzahlung muss der Betrag kleiner als der offene Restbetrag sein. Wähle sonst „Vollständig bezahlen“.');return;}
   const nextPayments=[...(paymentInvoice.payments||[]),{
-   id:`Z${Date.now()}`,date:payment.date,amount:payment.amount,
+   id:`Z${Date.now()}`,date:payment.date,amount,
    direction:paymentInvoice.direction==='Ausgang'?'Kunde' as const:'Lieferant' as const,
    reference:[payment.method,payment.reference].filter(Boolean).join(' · '),note:payment.note
   }];
   const next={...paymentInvoice,payments:nextPayments,paidAmount:nextPayments.reduce((sum,item)=>sum+item.amount,0)};
   update('invoices',paymentInvoice.id,{...next,status:simpleInvoicePaymentStatus(next)});
-  setPaymentInvoiceId(null);setPayment(emptyPayment());setMessage('');
+  setPaymentInvoiceId(null);setPaymentType('Teilzahlung');setPayment(emptyPayment());setMessage('');
  };
 
  return <Shell>
@@ -67,12 +71,13 @@ export default function Page(){
    <button onClick={saveInvoice}>Speichern</button>
   </div></article>}
   {paymentInvoice&&<article className="panel"><h2>Zahlung zu {paymentInvoice.number} erfassen</h2><p>Offener Restbetrag: <b>{eur(simpleInvoiceOpen(paymentInvoice))}</b></p><div className="formgrid">
-   <label>Zahlungsbetrag<input type="number" min="0.01" max={simpleInvoiceOpen(paymentInvoice)} step="0.01" value={payment.amount||''} onChange={e=>setPayment({...payment,amount:+e.target.value})}/></label>
+   <label>Zahlungsoption<select value={paymentType} onChange={e=>{const type=e.target.value as 'Teilzahlung'|'Vollständig';setPaymentType(type);setPayment({...payment,amount:type==='Vollständig'?simpleInvoiceOpen(paymentInvoice):0});}}><option value="Teilzahlung">Teilzahlung</option><option value="Vollständig">Vollständig bezahlen</option></select></label>
+   <label>Zahlungsbetrag<input type="number" min="0.01" max={simpleInvoiceOpen(paymentInvoice)} step="0.01" value={paymentType==='Vollständig'?simpleInvoiceOpen(paymentInvoice):payment.amount||''} disabled={paymentType==='Vollständig'} placeholder={paymentType==='Teilzahlung'?'Teilbetrag eingeben':''} onChange={e=>setPayment({...payment,amount:+e.target.value})}/></label>
    <label>Zahlungsdatum<input type="date" value={payment.date} onChange={e=>setPayment({...payment,date:e.target.value})}/></label>
    <label>Zahlungsart<select value={payment.method} onChange={e=>setPayment({...payment,method:e.target.value as PaymentMethod})}>{PAYMENT_METHODS.map(method=><option key={method}>{method}</option>)}</select></label>
    <input placeholder="Referenz / Buchungstext" value={payment.reference} onChange={e=>setPayment({...payment,reference:e.target.value})}/>
    <input placeholder="Notiz (optional)" value={payment.note} onChange={e=>setPayment({...payment,note:e.target.value})}/>
-   <button onClick={savePayment}>{payment.amount<simpleInvoiceOpen(paymentInvoice)?'Teilzahlung speichern':'Zahlung vollständig speichern'}</button>
+   <button onClick={savePayment}>{paymentType==='Teilzahlung'?'Teilzahlung speichern':'Vollständige Zahlung speichern'}</button>
    <button className="ghost" onClick={()=>setPaymentInvoiceId(null)}>Abbrechen</button>
   </div></article>}
   <article className="panel"><div className="tableWrap"><table><thead><tr><th>Nr.</th><th>{tab==='Ausgang'?'Kunde':'Lieferant'}</th><th>Projekt</th><th>Brutto</th><th>Bezahlt</th><th>Offen</th><th>Fällig</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>{rows.map(invoice=>{
