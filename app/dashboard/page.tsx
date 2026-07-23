@@ -2,9 +2,9 @@
 import Shell from '../../components/Shell';
 import {eur,useStore,type Entry,type Invoice,type TaxEvent} from '../../lib/store';
 import type {Appointment,Project,Task} from '../../lib/types';
+import {simpleInvoiceOpen,simpleInvoicePaymentStatus} from '../../lib/models/finance';
 
 const monthNames=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const gross=(x:Invoice)=>x.net*(1+(x.vatRate<0?0:x.vatRate/100));
 const daysBetween=(date:string)=>Math.ceil((new Date(date+'T12:00:00').getTime()-new Date().setHours(12,0,0,0))/86400000);
 
 function Sparkline({values}:{values:number[]}){
@@ -18,16 +18,16 @@ export default function Dashboard(){
  const inc=state.entries.filter((x:Entry)=>x.type==='Einnahme').reduce((a:number,x:Entry)=>a+x.net,0);
  const exp=state.entries.filter((x:Entry)=>x.type==='Ausgabe').reduce((a:number,x:Entry)=>a+x.net,0);
  const profit=inc-exp;
- const receivables=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&x.status!=='Bezahlt').reduce((a:number,x:Invoice)=>a+gross(x),0);
- const payables=state.invoices.filter((x:Invoice)=>x.direction==='Eingang'&&x.status!=='Bezahlt').reduce((a:number,x:Invoice)=>a+gross(x),0);
+ const receivables=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang').reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
+ const payables=state.invoices.filter((x:Invoice)=>x.direction==='Eingang').reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
  const openTaxes=state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt').reduce((a:number,x:TaxEvent)=>a+x.amount,0);
  const cash=state.settings.cashStart+inc-exp;
- const overdue=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<0);
+ const overdue=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&simpleInvoicePaymentStatus(x)==='Überfällig');
  const activeProjects=state.projects.filter((x:Project)=>!['Abgeschlossen','Storniert'].includes(x.status));
  const openTasks=state.tasks.filter((x:Task)=>!x.done);
  const horizon=(days:number)=>{
-   const incoming=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+gross(x),0);
-   const outgoing=state.invoices.filter((x:Invoice)=>x.direction==='Eingang'&&x.status!=='Bezahlt'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+gross(x),0);
+   const incoming=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
+   const outgoing=state.invoices.filter((x:Invoice)=>x.direction==='Eingang'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
    const taxes=state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=days).reduce((a:number,x:TaxEvent)=>a+x.amount,0);
    return {incoming,outgoing,taxes,end:cash+incoming-outgoing-taxes};
  };
@@ -55,7 +55,7 @@ export default function Dashboard(){
 
   <section className="twoCol cockpitPriority">
    <article className="panel"><div className="panelHead"><div><h2>Aktueller Handlungsbedarf</h2><small>Automatisch aus offenen Daten ermittelt</small></div><a href="/aufgaben">Aufgaben öffnen</a></div>
-    {overdue.length>0&&<div className="alertRow dangerAlert"><b>Überfällige Forderungen</b><span>{overdue.length} Rechnung(en) · {eur(overdue.reduce((a:number,x:Invoice)=>a+gross(x),0))}</span></div>}
+    {overdue.length>0&&<div className="alertRow dangerAlert"><b>Überfällige Forderungen</b><span>{overdue.length} Rechnung(en) · {eur(overdue.reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0))}</span></div>}
     {f30.end<0&&<div className="alertRow dangerAlert"><b>Liquidität in 30 Tagen negativ</b><span>Fehlbetrag {eur(Math.abs(f30.end))}</span></div>}
     {state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=30).map((x:TaxEvent)=><div className="alertRow taxAlert" key={x.id}><b>{x.type}</b><span>{new Date(x.date).toLocaleDateString('de-DE')} · {eur(x.amount)}</span></div>)}
     {openTasks.slice(0,4).map((x:Task)=><div className={`alertRow ${daysBetween(x.due)<0?'dangerAlert':x.priority==='Hoch'?'taxAlert':''}`} key={x.id}><b>{x.title}</b><span>{daysBetween(x.due)<0?'Überfällig':'Fällig'} {new Date(x.due).toLocaleDateString('de-DE')} · {x.priority}</span></div>)}
