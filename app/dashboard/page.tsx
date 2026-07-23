@@ -1,9 +1,11 @@
 'use client';
 import Shell from '../../components/Shell';
 import {eur,useStore,type Entry,type Invoice,type TaxEvent} from '../../lib/store';
+import {buildCockpitActions,buildCockpitKpis,type CockpitSeverity} from '../../lib/models/business-cockpit';
 import type {Appointment,Project,Task} from '../../lib/types';
 
 const monthNames=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const severityLabel:Record<CockpitSeverity,string>={critical:'Kritisch',warning:'Warnung',info:'Info',success:'Stabil'};
 const gross=(x:Invoice)=>x.net*(1+(x.vatRate<0?0:x.vatRate/100));
 const daysBetween=(date:string)=>Math.ceil((new Date(date+'T12:00:00').getTime()-new Date().setHours(12,0,0,0))/86400000);
 
@@ -44,9 +46,23 @@ export default function Dashboard(){
  const monthlyRevenue=[28000,31500,40200,48750,53600,67400,inc,62000,71000,66500,59000,78000];
  const monthlyProfit=[8200,9400,12100,15800,17200,22100,profit,19400,23800,21100,17600,26500];
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
+ const cockpitInput={cashStart:state.settings.cashStart,revenuePlan:state.settings.revenuePlan,incomeNet:inc,expenseNet:exp,invoices:state.invoices,taxEvents:state.taxEvents,tasks:state.tasks,offers:state.offers,projects:state.projects,today:new Date()};
+ const cockpitKpis=buildCockpitKpis(cockpitInput);
+ const cockpitActions=buildCockpitActions(cockpitInput);
+ const formatKpi=(value:number,unit:'currency'|'count'|'percent')=>unit==='currency'?eur(value):unit==='percent'?`${value} %`:String(value);
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
   <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT · LIVE AUS ERP-DATEN</p><h1>KASTONIA ERP v1.9.1 · Field Operations, Documents & Finance Workflow</h1><p>Finanzen, Steuern, Projekte und Handlungsbedarf auf einer Seite.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span><a className="primary" href="/angebotsvorbereitung">+ Neue Kalkulation</a></div></div>
+
+  <section className="cockpitV2 panel">
+   <div className="panelHead"><div><h2>Business-Cockpit v2 · Sprint 1</h2><small>Priorisierte Geschäftsführer-KPIs und automatisch sortierter Handlungsbedarf</small></div><span className="badge">Sprint 1</span></div>
+   <div className="cockpitV2Grid">
+    {cockpitKpis.map(kpi=><article className={`kpiCard ${kpi.severity==='critical'||kpi.severity==='warning'?'warning':''}`} key={kpi.id}><small>{kpi.label}</small><strong>{formatKpi(kpi.value,kpi.unit)}</strong><span>{severityLabel[kpi.severity]} · {kpi.helper}</span></article>)}
+   </div>
+   <div className="actionStack">
+    {cockpitActions.length?cockpitActions.map(action=><a className={`alertRow ${action.severity==='critical'?'dangerAlert':action.severity==='warning'?'taxAlert':''}`} href={action.href} key={action.id}><b>{action.title}</b><span>{action.detail}{action.dueDate?` · ${new Date(action.dueDate).toLocaleDateString('de-DE')}`:''}{typeof action.amount==='number'?` · ${eur(action.amount)}`:''}</span></a>):<div className="alertRow"><b>Kein akuter Handlungsbedarf</b><span>Alle Sprint-1-Signale sind im grünen Bereich.</span></div>}
+   </div>
+  </section>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
