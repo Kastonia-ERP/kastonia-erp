@@ -96,3 +96,12 @@ test('project-centered assignment supports drag drop, multi select, capacity bar
   assert.match(planning, /qualBadges/);
   assert.match(planning, /Fahrzeugführer/);
 });
+
+test('admin assignment workflow prevents duplicates and keeps a single team lead', () => {
+  assert.match(admin, /assignEmployee/);
+  assert.match(admin, /bereits eingeplant/);
+  assert.match(admin, /setDragged\(null\)/);
+  assert.match(admin, /makeTeamLead/);
+  assert.match(admin, /teamLead:a\.id===assignment\.id/);
+  assert.match(admin, /Keine weiteren verfügbaren Mitarbeiter/);
+});
