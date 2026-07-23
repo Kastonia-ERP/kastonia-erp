@@ -36,6 +36,12 @@ export const money=(euro:number):MoneyAmount=>({cents:Math.round(euro*100),curre
 export const addMoney=(items:MoneyAmount[]):MoneyAmount=>({cents:items.reduce((s,m)=>s+m.cents,0),currency:'EUR'});
 export const subMoney=(a:MoneyAmount,b:MoneyAmount):MoneyAmount=>({cents:a.cents-b.cents,currency:'EUR'});
 export const absMoney=(a:MoneyAmount):MoneyAmount=>({cents:Math.abs(a.cents),currency:'EUR'});
+type SimpleInvoicePayment={amount:number};
+type SimpleInvoice={net:number;vatRate:number;due?:string;status:string;gross?:number;paidAmount?:number;payments?:SimpleInvoicePayment[]};
+export function simpleInvoiceGross(invoice:SimpleInvoice):number{return invoice.gross??invoice.net+(invoice.vatRate<0?0:invoice.net*invoice.vatRate/100);}
+export function simpleInvoicePaid(invoice:SimpleInvoice):number{return invoice.payments?.reduce((sum,payment)=>sum+payment.amount,0)??invoice.paidAmount??(invoice.status==='Bezahlt'?simpleInvoiceGross(invoice):0);}
+export function simpleInvoiceOpen(invoice:SimpleInvoice):number{return Math.max(0,simpleInvoiceGross(invoice)-simpleInvoicePaid(invoice));}
+export function simpleInvoicePaymentStatus(invoice:SimpleInvoice,today=new Date()):PaymentStatus{const gross=simpleInvoiceGross(invoice);const paid=simpleInvoicePaid(invoice);if(paid>=gross)return 'Bezahlt';if(paid>0)return 'Teilweise bezahlt';if(invoice.due&&new Date(`${invoice.due}T23:59:59`)<today)return 'Überfällig';return 'Offen';}
 const activePayments=(payments:InvoicePayment[], invoiceId:string)=>payments.filter(p=>p.invoiceId===invoiceId&&!p.cancelledAt);
 export function paymentTotal(payments:InvoicePayment[], invoiceId:string):MoneyAmount{return addMoney(activePayments(payments,invoiceId).map(p=>p.amount));}
 export function updateOutgoingInvoicePayment(invoice:OutgoingInvoiceReference,payments:InvoicePayment[],today=new Date()):OutgoingInvoiceReference{const paid=paymentTotal(payments,invoice.id);const open=subMoney(invoice.grossAmount,paid);const overdue=open.cents>0&&new Date(invoice.dueDate)<today;const paymentStatus:PaymentStatus=invoice.invoiceStatus==='Storniert'||invoice.invoiceType==='Stornorechnung'?'Ausgebucht':open.cents<=0?'Bezahlt':paid.cents>0?'Teilweise bezahlt':overdue?'Überfällig':'Offen';return {...invoice,paidAmount:paid,openAmount:open.cents<0?money(0):open,paymentStatus};}
