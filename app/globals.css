@@ -86,3 +86,5 @@
  .cockpitPriority .timelineRow strong,
  .cockpitPriority .timelineRow small{color:#fff}
 }
+/* Employee and operations white-field contrast */
+.employeeGrid .panel,.employeeForm,.employeeForm input,.employeeForm textarea,.employeeForm select,.employeeGrid select,.operationsCenter .card,.operationsCenter table,.operationsCenter td,.operationsCenter th,.operationsCenter input,.operationsCenter select,.operationsCenter textarea{background:#fff!important;color:#111!important}.employeeGrid .panel small,.employeeGrid .panel span,.operationsCenter small,.operationsCenter .muted{color:#333!important}.quickButtons{display:flex;gap:10px;flex-wrap:wrap}.quickButtons button{border:1px solid var(--line);border-radius:10px;background:#fff;color:#111;padding:10px 12px;font-weight:800;cursor:pointer}.employeeForm textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:9px;padding:12px}.employeeForm label,.employeeGrid label{display:grid;gap:7px;font-weight:800;color:#111}.notice{background:#fff;color:#111;border:1px solid var(--line);border-radius:12px;padding:12px}
