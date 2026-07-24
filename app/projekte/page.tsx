@@ -4,6 +4,7 @@ import Shell from "../../components/Shell";
 import { useStore, eur } from "../../lib/store";
 import { useState } from "react";
 import { PROJECT_STATUSES } from "../../lib/types";
+import { normalizeProject } from "../../lib/store";
 
 const fmt = (v?: string) => (v ? new Date(v).toLocaleDateString("de-DE") : "offen");
 const emptyCustomer = {
@@ -103,7 +104,7 @@ export default function Page() {
           <button
             onClick={() => {
               if (!f.customer || !f.title) return;
-              add("projects", { id: "P-" + Date.now(), ...f });
+              add("projects", normalizeProject({ id: "P-" + Date.now(), ...f }, state.projects.length));
               setF({
                 customer: "",
                 title: "",
@@ -146,7 +147,7 @@ export default function Page() {
                     </Link>
                   </td>
                   <td>
-                    <Link href={`/projekte/${p.id}#aufmass`}>{p.measurements.length ? `${p.measurements.length} erfasst` : "Aufmaß öffnen"}</Link>
+                    <Link href={`/projekte/${p.id}#aufmass`}>{p.measurements?.length ? `${p.measurements.length} erfasst` : "Aufmaß öffnen"}</Link>
                   </td>
                   <td>{p.projectType}</td>
                   <td>
