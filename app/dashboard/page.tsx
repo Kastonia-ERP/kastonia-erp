@@ -42,7 +42,7 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT</p><h1>KASTONIA Dashboard</h1><p>Das Wichtigste zu Finanzen, Projekten und Terminen.</p></div><div className="headActions"><span className={`health ${status.toLowerCase()}`}>● {status}</span></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT</p><h1>KASTONIA Dashboard</h1><p>Das Wichtigste zu Finanzen, Projekten und Terminen.</p></div><div className="headActions"><a className="primary" href="/projekte">Projekt öffnen</a><a className="ghostBtn" href="/finanzen">CSV exportieren</a><a className="ghostBtn" href="/operations">Operations</a><span className={`health ${status.toLowerCase()}`}>● {status}</span></div></div>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
