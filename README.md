@@ -142,7 +142,7 @@ npm start
 
 ## Deployment
 
-Das Projekt ist weiterhin mit Vercel kompatibel, kann aber genauso auf einem eigenen Node.js-/Docker-Server betrieben werden. Es enthält noch keine zentrale Datenbank; Daten werden aktuell lokal im Browser gespeichert.
+Aktueller Stand in diesem Repository: Es ist kein Git-Remote und keine aktive Hosting-Konfiguration hinterlegt. Die Anwendung wird als Next.js-App gebaut (`npm run build`) und anschließend mit `npm start` auf einem Node.js-Server gestartet. Für die Aktualisierung der produktiven Anwendung muss der Zielserver den aktuellen Branch/Commit auschecken, `npm install`, `npm run build` und `npm start` bzw. den dortigen Prozess-Neustart ausführen. Vercel wird nicht vorausgesetzt und in diesem Repository nicht als aktive Bereitstellung angenommen. Daten werden aktuell im Browser gespeichert; produktive Supabase-Anbindung ist vorbereitet, aber nicht als aktive Bereitstellung konfiguriert.
 
 
 ## v1.5 – Teil 1 Einkauf, Lieferanten und Lieferungen
