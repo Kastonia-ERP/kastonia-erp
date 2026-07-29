@@ -23,6 +23,7 @@ const projectRecordNav = [
   ["Finanzen", "finanzen"],
   ["Dokumente", "dokumente"],
   ["Montage", "montage"],
+  ["Mitarbeiter", "mitarbeiter"],
   ["Rechnungen", "rechnungen"],
   ["Kommunikation", "kommunikation"],
   ["Notizen", "notizen"],
@@ -75,6 +76,7 @@ export default function ProjectRecord() {
           street: project.projectAddress.street,
           postalCode: project.projectAddress.postalCode,
           city: project.projectAddress.city,
+          assignedEmployeeIds: project.assignedEmployeeIds || [],
         }
       : null,
   );
@@ -111,6 +113,7 @@ export default function ProjectRecord() {
       priority: form.priority,
       responsible: form.responsible.trim(),
       montage: form.montage,
+      assignedEmployeeIds: form.assignedEmployeeIds,
       projectAddress: {
         ...project.projectAddress,
         street: form.street.trim(),
@@ -277,6 +280,15 @@ export default function ProjectRecord() {
               Montagetermin
               <input type="date" value={form.montage || ""} onChange={(e) => setForm({ ...form, montage: e.target.value })} />
             </label>
+            <fieldset className="employeePicker full">
+              <legend>Mitarbeiter zuordnen</legend>
+              {state.employees.filter((employee) => employee.active).map((employee) => (
+                <label key={employee.id}>
+                  <input type="checkbox" checked={form.assignedEmployeeIds.includes(employee.id)} onChange={() => setForm({ ...form, assignedEmployeeIds: form.assignedEmployeeIds.includes(employee.id) ? form.assignedEmployeeIds.filter((id) => id !== employee.id) : [...form.assignedEmployeeIds, employee.id] })} />
+                  <span><b>{employee.name}</b><small>{employee.role}</small></span>
+                </label>
+              ))}
+            </fieldset>
             <label>
               Straße und Hausnummer
               <input value={form.street} onChange={(e) => setForm({ ...form, street: e.target.value })} />
@@ -300,6 +312,15 @@ export default function ProjectRecord() {
           </div>
         </div>
       )}
+      <Section id="mitarbeiter" title="Zugeordnete Mitarbeiter">
+        <div className="assignedEmployeeList">
+          {(project.assignedEmployeeIds || []).map((employeeId) => {
+            const employee = state.employees.find((entry) => entry.id === employeeId);
+            return employee ? <div className="employeeAssignmentCard" key={employeeId}><b>{employee.name}</b><span>{employee.role} · {employee.availability}</span></div> : null;
+          })}
+        </div>
+        {!project.assignedEmployeeIds?.length && <Empty text="Diesem Projekt sind noch keine Mitarbeiter zugeordnet." />}
+      </Section>
       <div className="panel" id="status">
         <h2>Projektfortschritt</h2>
         <div className="stepper">

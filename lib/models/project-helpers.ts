@@ -1,4 +1,4 @@
-import { Project, ProjectFinancials, ProjectStatus } from '../types';
+import { EmployeeAssignment, Project, ProjectFinancials, ProjectStatus } from '../types';
 
 export const STORAGE_KEY_V09 = 'kastonia-erp-v09';
 export const LEGACY_STORAGE_KEY_V07 = 'kastonia-erp-v07';
@@ -40,6 +40,35 @@ export function calculateProjectMarginPercent(financials: Pick<ProjectFinancials
 }
 
 export function findProjectById(projects: Project[], id: string): Project | undefined { return projects.find(project => project.id === id); }
+
+/** The project record is the single source of truth for direct team membership. */
+export function getAssignedEmployeeIds(project: Pick<Project, 'assignedEmployeeIds'>): string[] {
+  return Array.from(new Set((project.assignedEmployeeIds || []).filter(Boolean)));
+}
+
+export function setAssignedEmployees(project: Project, employeeIds: string[], at = nowIso()): Project {
+  return { ...project, assignedEmployeeIds: Array.from(new Set(employeeIds.filter(Boolean))), updatedAt: at };
+}
+
+/** Turns persistent project membership into dated planning rows without storing a second list. */
+export function projectTeamAssignments(projects: Project[], date: string): EmployeeAssignment[] {
+  return projects.flatMap(project => {
+    const projectDate = project.montage || project.plannedInstallationDate;
+    if (projectDate !== date) return [];
+    return getAssignedEmployeeIds(project).map((employeeId, index) => ({
+      id: `PROJECT-${project.id}-${employeeId}-${date}`,
+      projectId: project.id,
+      montageId: project.installations?.[0]?.id || 'DIRECT',
+      employeeId,
+      date,
+      startTime: '08:00',
+      plannedEndTime: '16:30',
+      teamRole: 'Projektteam',
+      teamLead: index === 0,
+      note: 'Direkt im Projekt zugeordnet',
+    }));
+  });
+}
 
 export type ProjectBaseUpdate = Pick<Project, 'status' | 'phase' | 'priority' | 'responsible' | 'montage'>;
 export function updateProjectBaseData(project: Project, update: ProjectBaseUpdate, at = nowIso()): Project {
