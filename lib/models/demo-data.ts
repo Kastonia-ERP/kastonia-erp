@@ -3,9 +3,9 @@ import { Project, User, SiteReport, Notification } from '../types';
 const address = { street: 'Musterstraße 12', postalCode: '76131', city: 'Karlsruhe', country: 'DE' };
 
 export const demoUsers: User[] = [
-  {id:'U-ADMIN-GK',name:'Gökhan Karayel',email:'admin.gk@example.invalid',role:'ADMIN',active:true,demoLogin:'admin-demo-1',assignedProjectIds:[],createdAt:'2026-07-01T08:00:00.000Z',updatedAt:'2026-07-01T08:00:00.000Z'},
-  {id:'U-ADMIN-SK',name:'Seda Karayel',email:'admin.sk@example.invalid',role:'ADMIN',active:true,demoLogin:'admin-demo-2',assignedProjectIds:[],createdAt:'2026-07-01T08:00:00.000Z',updatedAt:'2026-07-01T08:00:00.000Z'},
-  {id:'U-MA-01',name:'Demo Mitarbeiter',email:'mitarbeiter@example.invalid',role:'MITARBEITER',active:true,demoLogin:'employee-demo',assignedProjectIds:['P-001','P-003'],createdAt:'2026-07-01T08:00:00.000Z',updatedAt:'2026-07-01T08:00:00.000Z'}
+  {id:'U-ADMIN-GK',name:'Gökhan Karayel',email:'admin.gk@example.invalid',role:'ADMIN',active:true,assignedProjectIds:[],createdAt:'2026-07-01T08:00:00.000Z',updatedAt:'2026-07-01T08:00:00.000Z'},
+  {id:'U-ADMIN-SK',name:'Seda Karayel',email:'admin.sk@example.invalid',role:'ADMIN',active:true,assignedProjectIds:[],createdAt:'2026-07-01T08:00:00.000Z',updatedAt:'2026-07-01T08:00:00.000Z'},
+  {id:'U-MA-01',name:'Demo Mitarbeiter',email:'mitarbeiter@example.invalid',role:'MITARBEITER',active:true,assignedProjectIds:['P-001','P-003'],createdAt:'2026-07-01T08:00:00.000Z',updatedAt:'2026-07-01T08:00:00.000Z'}
 ];
 
 export const demoSiteReports: SiteReport[] = [

@@ -19,3 +19,6 @@ Diese Dokumentation beschreibt die Cloud-Grundlage für den sicheren Onlinebetri
 - Vercel-Variablen aus .env.example setzen.
 - Storage Bucket über NEXT_PUBLIC_STORAGE_BUCKET / SUPABASE_STORAGE_BUCKET konfigurieren.
 - Migrationen bewusst durch Admin starten; kein automatischer Produktivimport beim App-Start.
+# Sichere Produktionsvariablen
+
+In allen eingesetzten Vercel-Umgebungen müssen `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_STORAGE_BUCKET` und `NEXT_PUBLIC_APP_ENV` gesetzt sein. Der Anon-Key ist für RLS vorgesehen; ein Supabase Service-Role-Key darf **nicht** als `NEXT_PUBLIC_*` Variable und wird von dieser Anwendung nicht benötigt.
