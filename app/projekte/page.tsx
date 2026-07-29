@@ -60,7 +60,7 @@ export default function Page() {
       <div className="pageHead">
         <div>
           <span className="eyebrow">PROJEKTSTEUERUNG · AUFMASS</span>
-          <h1>Projekte & Aufmaß</h1>
+          <span className="prepBadge">In Vorbereitung</span><h1>Projekte & Aufmaß</h1>
           <p>Kunden anlegen, Projekte verwalten und das Aufmaß direkt in der jeweiligen Projektakte bearbeiten.</p>
         </div>
       </div>
