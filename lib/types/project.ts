@@ -567,7 +567,6 @@ export interface User {
   email: string;
   role: UserRole;
   active: boolean;
-  demoLogin: string;
   assignedProjectIds: string[];
   createdAt: ISODateString;
   updatedAt: ISODateString;

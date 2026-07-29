@@ -1,5 +1,16 @@
+import {createServerClient} from '@supabase/ssr';
 import {NextResponse,type NextRequest} from 'next/server';
-const publicPrefixes=['/','/auth/reset-password'];
-const employeePages=['/mitarbeiter','/mitarbeiter-mobile'];
-export function middleware(req:NextRequest){const {pathname}=req.nextUrl;if(publicPrefixes.includes(pathname))return NextResponse.next();const hasSupabaseSession=req.cookies.getAll().some(c=>c.name.startsWith('sb-')&&c.name.includes('auth-token'));const hasDemoSession=req.cookies.get('kastonia-demo-session')?.value==='1';if(!hasSupabaseSession&&!hasDemoSession){const url=req.nextUrl.clone();url.pathname='/';url.searchParams.set('redirect',pathname);return NextResponse.redirect(url)}const role=req.cookies.get('kastonia-role')?.value;if(hasDemoSession&&role!=='ADMIN'&&!employeePages.some(page=>pathname.startsWith(page))){const url=req.nextUrl.clone();url.pathname='/mitarbeiter';return NextResponse.redirect(url)}return NextResponse.next()}
-export const config={matcher:['/((?!_next/static|_next/image|favicon.ico).*)']};
+
+const publicPaths=new Set(['/','/auth/reset-password']);
+export async function middleware(request:NextRequest){
+ let response=NextResponse.next({request});
+ const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+ const key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+ if(!url||!key)return publicPaths.has(request.nextUrl.pathname)?response:NextResponse.redirect(new URL('/?error=configuration',request.url));
+ const supabase=createServerClient(url,key,{cookies:{getAll:()=>request.cookies.getAll(),setAll(values){values.forEach(({name,value})=>request.cookies.set(name,value));response=NextResponse.next({request});values.forEach(({name,value,options})=>response.cookies.set(name,value,options));}}});
+ const {data:{user}}=await supabase.auth.getUser();
+ if(!user&&!publicPaths.has(request.nextUrl.pathname)){const login=new URL('/',request.url);login.searchParams.set('redirect',request.nextUrl.pathname);return NextResponse.redirect(login);}
+ if(user&&request.nextUrl.pathname==='/')return NextResponse.redirect(new URL('/dashboard',request.url));
+ return response;
+}
+export const config={matcher:['/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest).*)']};

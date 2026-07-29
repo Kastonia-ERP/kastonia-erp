@@ -18,7 +18,7 @@ export default function Dashboard(){
  const inc=state.invoicePayments.filter(payment=>payment.invoiceDirection==='Ausgang'&&!payment.cancelledAt).reduce((sum,payment)=>sum+payment.amount.cents/100,0);
  const exp=state.invoicePayments.filter(payment=>payment.invoiceDirection==='Eingang'&&!payment.cancelledAt).reduce((sum,payment)=>sum+payment.amount.cents/100,0);
  const profit=inc-exp;
- const finance=financeSnapshot(state,new Date('2026-07-22'));
+ const finance=financeSnapshot(state,new Date());
  const receivables=finance.receivablesCents/100;
  const payables=finance.payablesCents/100;
  const openTaxes=finance.taxesCents/100;
@@ -43,7 +43,7 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT</p><h1>KASTONIA Dashboard</h1><p>Das Wichtigste zu Finanzen, Projekten und Terminen.</p></div><div className="headActions"><a className="primary" href="/projekte">Projekt öffnen</a><button className="ghostBtn" onClick={()=>downloadCsv(openItemsCsv(state,new Date('2026-07-22')),'kastonia-offene-posten.csv')}>CSV exportieren</button><a className="ghostBtn" href="/operations">Operations</a><span className={`health ${status.toLowerCase()}`}>● {status}</span></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT</p><h1>KASTONIA Dashboard</h1><p>Das Wichtigste zu Finanzen, Projekten und Terminen.</p></div><div className="headActions"><a className="primary" href="/projekte">Projekt öffnen</a><button className="ghostBtn" onClick={()=>downloadCsv(openItemsCsv(state,new Date()),'kastonia-offene-posten.csv')}>CSV exportieren</button><a className="ghostBtn" href="/operations">Operations</a><span className={`health ${status.toLowerCase()}`}>● {status}</span></div></div>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>

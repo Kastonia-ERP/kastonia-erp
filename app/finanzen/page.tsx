@@ -7,10 +7,10 @@ import {downloadCsv,openItemsCsv} from '../../lib/models/dashboard';
 const euro=(cents:number)=>eur(cents/100);
 export default function Page(){
  const {state}=useStore();
- const exportCsv=()=>downloadCsv(openItemsCsv(state,new Date('2026-07-22')),'kastonia-offene-posten.csv');
- const outgoing=state.outgoingInvoices.map(i=>updateOutgoingInvoicePayment(i,state.invoicePayments,new Date('2026-07-22')));
- const incoming=state.incomingInvoices.map(i=>updateIncomingInvoicePayment(i,state.invoicePayments,new Date('2026-07-22')));
- const openItems=createOpenItems(outgoing,incoming,new Date('2026-07-22'));
+ const exportCsv=()=>downloadCsv(openItemsCsv(state,new Date()),'kastonia-offene-posten.csv');
+ const outgoing=state.outgoingInvoices.map(i=>updateOutgoingInvoicePayment(i,state.invoicePayments,new Date()));
+ const incoming=state.incomingInvoices.map(i=>updateIncomingInvoicePayment(i,state.invoicePayments,new Date()));
+ const openItems=createOpenItems(outgoing,incoming,new Date());
  const vat=vatSummary(outgoing,incoming,'2026-07-01','2026-07-31');
  const project=projectFinance('P-003',outgoing,incoming,state.invoicePayments);
  const received=state.invoicePayments.filter(p=>p.invoiceDirection==='Ausgang'&&!p.cancelledAt).reduce((s,p)=>s+p.amount.cents,0);
