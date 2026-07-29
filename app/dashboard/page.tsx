@@ -1,8 +1,8 @@
 'use client';
 import Shell from '../../components/Shell';
-import {eur,useStore,type Entry,type Invoice,type TaxEvent} from '../../lib/store';
+import {eur,useStore} from '../../lib/store';
 import type {Appointment,Project,Task} from '../../lib/types';
-import {simpleInvoiceOpen,simpleInvoicePaymentStatus} from '../../lib/models/finance';
+import {downloadCsv,financeSnapshot,openItemsCsv} from '../../lib/models/dashboard';
 
 const monthNames=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const daysBetween=(date:string)=>Math.ceil((new Date(date+'T12:00:00').getTime()-new Date().setHours(12,0,0,0))/86400000);
@@ -15,20 +15,21 @@ function Sparkline({values}:{values:number[]}){
 
 export default function Dashboard(){
  const {state}=useStore();
- const inc=state.entries.filter((x:Entry)=>x.type==='Einnahme').reduce((a:number,x:Entry)=>a+x.net,0);
- const exp=state.entries.filter((x:Entry)=>x.type==='Ausgabe').reduce((a:number,x:Entry)=>a+x.net,0);
+ const inc=state.invoicePayments.filter(payment=>payment.invoiceDirection==='Ausgang'&&!payment.cancelledAt).reduce((sum,payment)=>sum+payment.amount.cents/100,0);
+ const exp=state.invoicePayments.filter(payment=>payment.invoiceDirection==='Eingang'&&!payment.cancelledAt).reduce((sum,payment)=>sum+payment.amount.cents/100,0);
  const profit=inc-exp;
- const receivables=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang').reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
- const payables=state.invoices.filter((x:Invoice)=>x.direction==='Eingang').reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
- const openTaxes=state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt').reduce((a:number,x:TaxEvent)=>a+x.amount,0);
+ const finance=financeSnapshot(state,new Date('2026-07-22'));
+ const receivables=finance.receivablesCents/100;
+ const payables=finance.payablesCents/100;
+ const openTaxes=finance.taxesCents/100;
  const cash=state.settings.cashStart+inc-exp;
- const overdue=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&simpleInvoicePaymentStatus(x)==='Überfällig');
+ const overdue=finance.openItems.filter(item=>item.direction==='Forderung'&&item.warningLevel.includes('überfällig'));
  const activeProjects=state.projects.filter((x:Project)=>!['Abgeschlossen','Storniert'].includes(x.status));
  const openTasks=state.tasks.filter((x:Task)=>!x.done);
  const horizon=(days:number)=>{
-   const incoming=state.invoices.filter((x:Invoice)=>x.direction==='Ausgang'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
-   const outgoing=state.invoices.filter((x:Invoice)=>x.direction==='Eingang'&&daysBetween(x.due)<=days).reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0);
-   const taxes=state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=days).reduce((a:number,x:TaxEvent)=>a+x.amount,0);
+   const incoming=finance.openItems.filter(item=>item.direction==='Forderung'&&daysBetween(item.dueDate)<=days).reduce((sum,item)=>sum+item.openAmount.cents/100,0);
+   const outgoing=finance.openItems.filter(item=>item.direction==='Verbindlichkeit'&&daysBetween(item.dueDate)<=days).reduce((sum,item)=>sum+item.openAmount.cents/100,0);
+   const taxes=finance.taxes.filter(item=>daysBetween(item.dueDate)<=days).reduce((sum,item)=>sum+(item.amount?.cents||0)/100,0);
    return {incoming,outgoing,taxes,end:cash+incoming-outgoing-taxes};
  };
  const f30=horizon(30),f60=horizon(60),f90=horizon(90);
@@ -42,7 +43,7 @@ export default function Dashboard(){
  const cashCurve=[cash-18000,cash-12000,cash-7000,cash+3000,cash+9000,cash+16500,cash,f30.end,f60.end,f90.end,f90.end+8000,f90.end+14500];
  const status=f30.end<0?'KRITISCH':f30.end<15000?'ACHTUNG':'STABIL';
  return <Shell>
-  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT</p><h1>KASTONIA Dashboard</h1><p>Das Wichtigste zu Finanzen, Projekten und Terminen.</p></div><div className="headActions"><a className="primary" href="/projekte">Projekt öffnen</a><a className="ghostBtn" href="/finanzen">CSV exportieren</a><a className="ghostBtn" href="/operations">Operations</a><span className={`health ${status.toLowerCase()}`}>● {status}</span></div></div>
+  <div className="pageHead cockpitHead"><div><p className="eyebrow">GESCHÄFTSFÜHRER-COCKPIT</p><h1>KASTONIA Dashboard</h1><p>Das Wichtigste zu Finanzen, Projekten und Terminen.</p></div><div className="headActions"><a className="primary" href="/projekte">Projekt öffnen</a><button className="ghostBtn" onClick={()=>downloadCsv(openItemsCsv(state,new Date('2026-07-22')),'kastonia-offene-posten.csv')}>CSV exportieren</button><a className="ghostBtn" href="/operations">Operations</a><span className={`health ${status.toLowerCase()}`}>● {status}</span></div></div>
 
   <section className="cockpitKpis">
    <article className="kpiCard featured"><small>Verfügbare Liquidität</small><strong>{eur(cash)}</strong><span>inkl. erfasster Einnahmen und Ausgaben</span></article>
@@ -55,11 +56,11 @@ export default function Dashboard(){
 
   <section className="twoCol cockpitPriority">
    <article className="panel"><div className="panelHead"><div><h2>Aktueller Handlungsbedarf</h2><small>Automatisch aus offenen Daten ermittelt</small></div><a href="/aufgaben">Aufgaben öffnen</a></div>
-    {overdue.length>0&&<div className="alertRow dangerAlert"><b>Überfällige Forderungen</b><span>{overdue.length} Rechnung(en) · {eur(overdue.reduce((a:number,x:Invoice)=>a+simpleInvoiceOpen(x),0))}</span></div>}
+    {overdue.length>0&&<div className="alertRow dangerAlert"><b>Überfällige Forderungen</b><span>{overdue.length} Rechnung(en) · {eur(overdue.reduce((sum,item)=>sum+item.openAmount.cents/100,0))}</span></div>}
     {f30.end<0&&<div className="alertRow dangerAlert"><b>Liquidität in 30 Tagen negativ</b><span>Fehlbetrag {eur(Math.abs(f30.end))}</span></div>}
-    {state.taxEvents.filter((x:TaxEvent)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=30).map((x:TaxEvent)=><div className="alertRow taxAlert" key={x.id}><b>{x.type}</b><span>{new Date(x.date).toLocaleDateString('de-DE')} · {eur(x.amount)}</span></div>)}
+    {finance.taxes.filter(item=>daysBetween(item.dueDate)<=30).map(item=><div className="alertRow taxAlert" key={item.id}><b>{item.type}</b><span>{new Date(item.dueDate).toLocaleDateString('de-DE')} · {eur((item.amount?.cents||0)/100)}</span></div>)}
     {openTasks.slice(0,4).map((x:Task)=><div className={`alertRow ${daysBetween(x.due)<0?'dangerAlert':x.priority==='Hoch'?'taxAlert':''}`} key={x.id}><b>{x.title}</b><span>{daysBetween(x.due)<0?'Überfällig':'Fällig'} {new Date(x.due).toLocaleDateString('de-DE')} · {x.priority}</span></div>)}
-    {!overdue.length&&f30.end>=0&&!state.taxEvents.some((x:TaxEvent)=>x.status!=='Bezahlt'&&daysBetween(x.date)<=30)&&!openTasks.length&&<p className="emptyState">Aktuell besteht kein dringender Handlungsbedarf.</p>}
+    {!overdue.length&&f30.end>=0&&!finance.taxes.some(item=>daysBetween(item.dueDate)<=30)&&!openTasks.length&&<p className="emptyState">Aktuell besteht kein dringender Handlungsbedarf.</p>}
    </article>
    <article className="panel"><div className="panelHead"><div><h2>Nächste Termine</h2><small>Montage, Aufmaß und Kundentermine</small></div><a href="/kalender">Kalender öffnen</a></div>{upcomingAppointments.map((x:Appointment)=><div className="timelineRow" key={x.id}><time>{new Date(x.date).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})}</time><div><strong>{x.title}</strong><small>{x.type}</small></div></div>)}{!upcomingAppointments.length&&<p className="emptyState">Keine kommenden Termine eingetragen.</p>}</article>
   </section>
