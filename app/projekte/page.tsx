@@ -24,6 +24,7 @@ export default function Page() {
     value: 0,
     status: "Neue Anfrage",
     montage: "",
+    assignedEmployeeIds: [] as string[],
   });
   const [customer, setCustomer] = useState(emptyCustomer);
   const [customerMessage, setCustomerMessage] = useState("");
@@ -101,6 +102,15 @@ export default function Page() {
             ))}
           </select>
           <input type="date" value={f.montage} onChange={(e) => setF({ ...f, montage: e.target.value })} />
+          <fieldset className="employeePicker">
+            <legend>Mitarbeiter zuordnen</legend>
+            {state.employees.filter((employee) => employee.active).map((employee) => (
+              <label key={employee.id}>
+                <input type="checkbox" checked={f.assignedEmployeeIds.includes(employee.id)} onChange={() => setF({ ...f, assignedEmployeeIds: f.assignedEmployeeIds.includes(employee.id) ? f.assignedEmployeeIds.filter((id) => id !== employee.id) : [...f.assignedEmployeeIds, employee.id] })} />
+                <span><b>{employee.name}</b><small>{employee.role}</small></span>
+              </label>
+            ))}
+          </fieldset>
           <button
             onClick={() => {
               if (!f.customer || !f.title) return;
@@ -111,6 +121,7 @@ export default function Page() {
                 value: 0,
                 status: "Neue Anfrage",
                 montage: "",
+                assignedEmployeeIds: [],
               });
             }}
           >

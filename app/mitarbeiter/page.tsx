@@ -9,7 +9,7 @@ export default function EmployeePage(){
  const {state,add}=useStore();
  const user=state.users.find(u=>u.role==='MITARBEITER')||state.users[0];
  const employeeId=employeeIdForUser(user.id,user.name,state.employees);
- const assignedIds=new Set([...user.assignedProjectIds,...state.projects.filter(p=>p.assignedEmployeeIds?.some(id=>id===user.id||id===employeeId)).map(p=>p.id)]);
+ const assignedIds=new Set(state.projects.filter(p=>p.assignedEmployeeIds?.includes(employeeId)).map(p=>p.id));
  const assigned=state.projects.filter(p=>assignedIds.has(p.id)).map(p=>sanitizeProjectForUser(user,p));
  const [activeProjectId,setActiveProjectId]=useState(assigned[0]?.id||'');
  const [feedback,setFeedback]=useState('Bereit für Baustellenmeldung, Bilder, Material, Werkzeug, Mangel und Stunden.');

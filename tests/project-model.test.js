@@ -258,3 +258,14 @@ test('v1.6 migration keeps users reports notifications and timeline', () => {
   assert.ok(state.notifications.length >= 1);
   assert.equal(Array.isArray(state.projects[0].timeline), true);
 });
+
+const { getAssignedEmployeeIds, setAssignedEmployees, projectTeamAssignments } = require('../lib/models/project-helpers.ts');
+test('uses project employee ids as single source for profiles, planning and calendar', () => {
+  const project = migrateToV09({ projects: [{ id:'P-TEAM', customer:'C', title:'Teamprojekt', montage:'2026-08-10' }] }).projects[0];
+  const updated = setAssignedEmployees(project, ['EMP-003', 'EMP-004', 'EMP-003'], '2026-07-29T10:00:00.000Z');
+  assert.deepEqual(getAssignedEmployeeIds(updated), ['EMP-003', 'EMP-004']);
+  assert.equal(updated.updatedAt, '2026-07-29T10:00:00.000Z');
+  const assignments = projectTeamAssignments([updated], '2026-08-10');
+  assert.deepEqual(assignments.map(entry => entry.employeeId), ['EMP-003', 'EMP-004']);
+  assert.equal(projectTeamAssignments([updated], '2026-08-11').length, 0);
+});
